@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resident Homes — Snowflake Sanctuary</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --earth:#100a05;--soil:#1e1208;--clay:#8B3A1C;--clay-light:#b85a35;
+  --ochre:#C8973A;--ochre-pale:#e8c87a;--bone:#F2EAD8;--bone-dark:#ddd0b8;
+  --sage:#4a6b2e;--sage-light:#6a9045;--sky:#4A7A9B;--sky-light:#7aaec8;
+  --sand:#c4a87a;--rust:#9B3E1C;--juniper:#2D4A1E;--teal:#2a6060;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--earth);color:var(--bone);font-family:'Crimson Text',Georgia,serif;font-size:18px;line-height:1.7;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.4;}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(16,10,5,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(200,151,58,0.2);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;}
+.nav-logo{font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.15em;color:var(--ochre);text-decoration:none;}
+.nav-links{display:flex;gap:0.25rem;}
+.nav-links a{padding:0.35rem 0.75rem;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.12em;color:rgba(242,234,216,0.6);text-decoration:none;border:1px solid transparent;border-radius:2px;transition:all 0.2s;text-transform:uppercase;}
+.nav-links a:hover,.nav-links a.active{color:var(--ochre);border-color:rgba(200,151,58,0.3);background:rgba(200,151,58,0.08);}
+.page-hero{padding:8rem 2rem 4rem;text-align:center;max-width:900px;margin:0 auto;}
+.page-eyebrow{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;color:var(--ochre);text-transform:uppercase;margin-bottom:1rem;}
+.page-title{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,4rem);font-weight:900;color:var(--bone);margin-bottom:1rem;line-height:1.1;}
+.page-sub{font-size:1.1rem;color:var(--sand);font-style:italic;max-width:600px;margin:0 auto 2rem;}
+section{padding:4rem 2rem;max-width:1100px;margin:0 auto;}
+.section-label{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;color:var(--ochre);text-transform:uppercase;margin-bottom:0.75rem;}
+h2{font-family:'Cinzel',serif;font-size:clamp(1.4rem,2.5vw,2rem);color:var(--bone);margin-bottom:1.5rem;}
+h3{font-family:'Cinzel',serif;font-size:1rem;color:var(--ochre-pale);margin-bottom:0.5rem;}
+.divider{width:100%;height:1px;background:linear-gradient(to right,transparent,rgba(200,151,58,0.3),transparent);}
+p{color:rgba(242,234,216,0.7);margin-bottom:1rem;}
+
+/* HEX GEOSHIP VISUAL */
+.hex-showcase{
+  display:flex;justify-content:center;align-items:center;
+  padding:3rem 0;gap:2rem;flex-wrap:wrap;
+}
+.hex-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem;}
+.hex-label{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.15em;color:rgba(200,151,58,0.6);text-transform:uppercase;}
+
+/* PRIVATE AREA CONCEPT */
+.private-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:1.5rem;
+  margin-top:1.5rem;
+}
+.private-card{
+  background:rgba(30,18,8,0.7);
+  border:1px solid rgba(200,151,58,0.12);
+  border-radius:10px;
+  padding:2rem;
+  position:relative;
+  overflow:hidden;
+  transition:all 0.3s;
+}
+.private-card:hover{border-color:rgba(200,151,58,0.3);transform:translateY(-3px);}
+.private-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--ochre),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.private-card:hover::before{opacity:1;}
+.pc-icon{font-size:2rem;margin-bottom:1rem;display:block;}
+.pc-title{font-family:'Cinzel',serif;font-size:0.9rem;color:var(--ochre-pale);letter-spacing:0.1em;margin-bottom:0.75rem;display:block;}
+.pc-desc{font-size:0.88rem;color:rgba(242,234,216,0.6);line-height:1.6;}
+
+/* MEMBERSHIP PATH */
+.path-steps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1rem;
+  margin-top:1.5rem;
+  position:relative;
+}
+.step-card{
+  background:rgba(30,18,8,0.6);
+  border:1px solid rgba(200,151,58,0.1);
+  border-radius:8px;
+  padding:1.5rem;
+  text-align:center;
+}
+.step-num{
+  font-family:'Cinzel',serif;
+  font-size:2rem;
+  color:rgba(200,151,58,0.15);
+  display:block;
+  margin-bottom:0.5rem;
+}
+.step-title{font-family:'Cinzel',serif;font-size:0.8rem;color:var(--ochre-pale);letter-spacing:0.1em;display:block;margin-bottom:0.5rem;}
+.step-desc{font-size:0.82rem;color:rgba(242,234,216,0.55);line-height:1.5;}
+
+/* COMMUNAL KITCHEN FEATURE */
+.kitchen-feature{
+  background:linear-gradient(135deg,rgba(60,30,10,0.6) 0%,rgba(80,40,15,0.4) 100%);
+  border:1px solid rgba(200,151,58,0.2);
+  border-radius:12px;
+  padding:3rem;
+  margin-top:2rem;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:3rem;
+}
+.kf-title{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--ochre-pale);margin-bottom:1rem;}
+.kf-list{list-style:none;font-size:0.9rem;color:rgba(242,234,216,0.65);line-height:2.1;}
+.kf-list li::before{content:'✦  ';color:rgba(200,151,58,0.5);}
+
+/* FLOATING STRUCTURES DETAIL */
+.float-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1.5rem;}
+.float-card{
+  background:linear-gradient(135deg,rgba(8,18,30,0.8) 0%,rgba(20,35,55,0.6) 100%);
+  border:1px solid rgba(74,122,155,0.2);
+  border-radius:8px;
+  padding:1.75rem;
+  transition:all 0.2s;
+}
+.float-card:hover{border-color:rgba(74,122,155,0.4);}
+.fc-icon{font-size:1.5rem;margin-bottom:0.75rem;display:block;}
+.fc-title{font-family:'Cinzel',serif;font-size:0.8rem;color:var(--sky-light);letter-spacing:0.1em;margin-bottom:0.5rem;display:block;}
+.fc-desc{font-size:0.85rem;color:rgba(242,234,216,0.55);line-height:1.6;}
+
+/* GEOSHIP INFO */
+.geoship-box{
+  background:rgba(20,12,8,0.8);
+  border:1px solid rgba(200,151,58,0.15);
+  border-radius:10px;
+  padding:2.5rem;
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:3rem;
+  margin-top:1.5rem;
+}
+.info-list{list-style:none;font-size:0.9rem;color:rgba(242,234,216,0.65);line-height:2.1;}
+.info-list li{border-bottom:1px solid rgba(255,255,255,0.04);padding:0.2rem 0;}
+.info-list li::before{content:'·  ';color:var(--ochre);}
+.stat-block{display:flex;flex-direction:column;gap:1.25rem;}
+.stat-item{background:rgba(200,151,58,0.05);border:1px solid rgba(200,151,58,0.1);border-radius:6px;padding:1rem;}
+.stat-num{font-family:'Cinzel',serif;font-size:1.4rem;color:var(--ochre);display:block;margin-bottom:0.25rem;}
+.stat-desc{font-size:0.75rem;color:rgba(242,234,216,0.45);font-family:'Cinzel',serif;letter-spacing:0.08em;}
+
+footer{border-top:1px solid rgba(200,151,58,0.1);padding:3rem 2rem;text-align:center;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.2em;color:rgba(242,234,216,0.25);}
+@media(max-width:768px){.kitchen-feature,.geoship-box{grid-template-columns:1fr;gap:1.5rem;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">✦ Snowflake Sanctuary</a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="dome.html">Dome</a>
+    <a href="geoships.html" class="active">Residents</a>
+    <a href="map.html">Map</a>
+    <a href="constitution.html">Covenant</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Permanent Residents · Private Areas · Collective Commons</div>
+  <h1 class="page-title">Resident Homes</h1>
+  <p class="page-sub">Each permanent resident holds their own private space on the land — designed by them, built by them, theirs. The community gathers at the commons. The rest belongs to the individual.</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- PRINCIPLE OF PRIVATE SPACE -->
+<section>
+  <div class="section-label">The Model</div>
+  <h2>Sovereign Space Within Shared Land</h2>
+  <p>Snowflake Sanctuary is not a commune. It is a community of sovereign individuals who share infrastructure, land stewardship obligations, and a governing covenant — and who each maintain a private area that is wholly their own. No clustering. No shared walls. Each resident's space is a private node within the larger organism.</p>
+  <p>The communal kitchen, the wash corridor, the ponds, the food forest, the pottery studio, the art studio — these are commons. Your home, your garden, your creative space — these are yours.</p>
+  <div class="private-grid">
+    <div class="private-card">
+      <span class="pc-icon">🏔</span>
+      <span class="pc-title">Private Elevation</span>
+      <p class="pc-desc">Each resident selects their own area of the 40 acres. Sites are chosen to avoid visual intrusion on neighbors, to maximize solar orientation, and to respect the land's hydrology. No two homes share a view corridor.</p>
+    </div>
+    <div class="private-card">
+      <span class="pc-icon">⬡</span>
+      <span class="pc-title">Custom-Designed Home</span>
+      <p class="pc-desc">Residents commission their Geoship (or build their own structure) to their own specification. Layout, size, orientation, interior design — all theirs. The only constraint: beauty, durability, and consistency with the land.</p>
+    </div>
+    <div class="private-card">
+      <span class="pc-icon">🌱</span>
+      <span class="pc-title">Personal Garden Zone</span>
+      <p class="pc-desc">Each resident has a defined personal garden and growing area adjacent to their home. Complementary to but independent of the communal food forest. You grow what you want, how you want it.</p>
+    </div>
+    <div class="private-card">
+      <span class="pc-icon">🔐</span>
+      <span class="pc-title">Ownership Pathway</span>
+      <p class="pc-desc">Permanent residents who build on the land accrue ownership rights in their structure and improvements. The specific threshold and equity framework is defined in the Founders' Agreement and the community covenant.</p>
+    </div>
+    <div class="private-card">
+      <span class="pc-icon">⚖️</span>
+      <span class="pc-title">Personal Domain is Sovereign</span>
+      <p class="pc-desc">From Article V of the community constitution: matters affecting private structures, personal practice, and individual conduct remain within the domain of the responsible person. No committee governs your home.</p>
+    </div>
+    <div class="private-card">
+      <span class="pc-icon">🤝</span>
+      <span class="pc-title">Commons Contribution</span>
+      <p class="pc-desc">Private sovereignty comes with commons responsibility. Each resident contributes defined hours to shared systems — goat care, food forest, water systems, guest hosting. The formula is transparent and agreed before arrival.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GEOSHIP SECTION -->
+<section>
+  <div class="section-label">Aspirational Partnership</div>
+  <h2>Geoship — Geodesic Ceramic Homes</h2>
+  <p>Geoship (geoship.is) builds geodesic dome homes from a geopolymer ceramic composite that is stronger than concrete, fire-resistant, non-toxic, and beautiful. The geometry is ancient — Buckminster Fuller's insight translated into permanent residential architecture. The material is modern — engineered to outlast wood-frame construction by centuries.</p>
+  <p style="font-style:italic;color:var(--sand);">This is an aspirational partnership — we intend to reach out to Geoship as the community forms and present Snowflake Sanctuary as a showcase site. Every resident who chooses a Geoship home strengthens the case for a volume relationship.</p>
+
+  <div class="geoship-box">
+    <div>
+      <h3>What Geoship Offers</h3>
+      <ul class="info-list" style="margin-top:1rem;">
+        <li>Prefabricated geodesic panels, shipped and assembled on-site</li>
+        <li>Geopolymer ceramic: fire-proof, mold-proof, pest-proof, non-toxic</li>
+        <li>Customizable interior layout within geodesic geometry</li>
+        <li>Off-grid ready: solar, composting, water systems integrate cleanly</li>
+        <li>Dome geometry performs exceptionally at high elevation with snow load</li>
+        <li>Each resident commissions their own configuration</li>
+        <li>No harmful chemicals in materials or construction</li>
+        <li>Building material does not outgas — healthy indoor air</li>
+        <li>Aesthetically coherent with Snowflake Sanctuary's design identity</li>
+        <li>Currently: waitlist for ordering — initiate contact in Year 1</li>
+      </ul>
+    </div>
+    <div class="stat-block">
+      <div class="stat-item">
+        <span class="stat-num">$50–150k</span>
+        <span class="stat-desc">ESTIMATED COST PER DOME · SIZE-DEPENDENT</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">100+ yr</span>
+        <span class="stat-desc">GEOPOLYMER CERAMIC LIFESPAN</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">geoship.is</span>
+        <span class="stat-desc">WEBSITE · REVIEW CURRENT WAITLIST STATUS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hex visual -->
+  <div class="hex-showcase">
+    <svg viewBox="0 0 300 260" width="300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hexGrad1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(74,107,46,0.3)"/>
+          <stop offset="100%" stop-color="rgba(74,107,46,0.1)"/>
+        </linearGradient>
+        <linearGradient id="hexGrad2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(200,151,58,0.2)"/>
+          <stop offset="100%" stop-color="rgba(200,151,58,0.05)"/>
+        </linearGradient>
+      </defs>
+      <!-- Main dome hexagon -->
+      <polygon points="150,15 235,62 235,157 150,205 65,157 65,62" 
+               fill="url(#hexGrad1)" stroke="rgba(74,107,46,0.5)" stroke-width="2"/>
+      <!-- Inner structure lines (geodesic) -->
+      <polygon points="150,40 210,75 210,145 150,180 90,145 90,75" 
+               fill="none" stroke="rgba(74,107,46,0.3)" stroke-width="1"/>
+      <polygon points="150,65 185,88 185,133 150,155 115,133 115,88" 
+               fill="none" stroke="rgba(74,107,46,0.2)" stroke-width="1"/>
+      <!-- Center point -->
+      <circle cx="150" cy="110" r="4" fill="rgba(200,151,58,0.5)"/>
+      <!-- Geodesic lines from center -->
+      <line x1="150" y1="110" x2="150" y2="40" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <line x1="150" y1="110" x2="210" y2="75" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <line x1="150" y1="110" x2="210" y2="145" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <line x1="150" y1="110" x2="150" y2="180" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <line x1="150" y1="110" x2="90" y2="145" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <line x1="150" y1="110" x2="90" y2="75" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <!-- Label -->
+      <text x="150" y="225" text-anchor="middle" font-family="Cinzel,serif" font-size="10" fill="rgba(200,151,58,0.6)" letter-spacing="2">GEOSHIP GEODOME</text>
+      <text x="150" y="242" text-anchor="middle" font-family="Crimson Text,serif" font-size="9" fill="rgba(242,234,216,0.35)">geopolymer ceramic · custom per resident</text>
+    </svg>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MEMBERSHIP PATH -->
+<section>
+  <div class="section-label">How Someone Becomes a Resident</div>
+  <h2>The Path to Permanent Membership</h2>
+  <div class="path-steps">
+    <div class="step-card">
+      <span class="step-num">01</span>
+      <span class="step-title">Long-Stay Visit</span>
+      <p class="step-desc">3–8 weeks. Working guest or artist residency. You contribute labor. You experience the community. The community experiences you.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">02</span>
+      <span class="step-title">Extended Stay</span>
+      <p class="step-desc">3–6 months. Deeper integration. You take on a defined role. You participate in governance. The relationship develops in both directions.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">03</span>
+      <span class="step-title">Membership Proposal</span>
+      <p class="step-desc">You propose your permanent role, your home site, your contribution model, and your build plan. Founding members review and confirm alignment.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">04</span>
+      <span class="step-title">Site Selection</span>
+      <p class="step-desc">You choose your private area. It is mapped, recorded, and protected by the community covenant. No one else builds there.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">05</span>
+      <span class="step-title">Build + Root</span>
+      <p class="step-desc">You build your home — Geoship, earth dome, converted structure, or custom build. You plant your garden. You root into the land. After an agreed improvement threshold, you hold equity in your structure.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMMUNAL KITCHEN -->
+<section>
+  <div class="section-label">The Heart of the Commons</div>
+  <h2>The Communal Kitchen</h2>
+  <p>Not a farmhouse kitchen. A production space and gathering place large enough for cheesemaking, fermentation, communal meals, and teaching — built from juniper timber, stone, and clay from the land. The most beautiful structure on the property, and the most used.</p>
+  <div class="kitchen-feature">
+    <div>
+      <div class="kf-title">Design</div>
+      <ul class="kf-list">
+        <li>Juniper timber frame · stone and adobe walls</li>
+        <li>Open-air or semi-open design · pergola extension</li>
+        <li>Wood-fired oven from local clay · center hearth</li>
+        <li>Ironwork fixtures from the forge · hooks, hardware, shelving</li>
+        <li>Herb garden adjacent · growing into the kitchen</li>
+        <li>Large enough for 20+ people to gather comfortably</li>
+        <li>Outdoor seating under juniper canopy or grape vine trellis</li>
+      </ul>
+    </div>
+    <div>
+      <div class="kf-title">Function</div>
+      <ul class="kf-list">
+        <li>Cheesemaking: pasteurization sink, mold press, aging area</li>
+        <li>Fermentation alcove: crocks, kimchi, lacto-fermented vegetables</li>
+        <li>Arizona Cottage Food certified for direct sales</li>
+        <li>Daily communal meals for residents + WWOOFers</li>
+        <li>Workshop space: cheesemaking, fermentation, bread</li>
+        <li>Honey extraction · beeswax processing</li>
+        <li>Seasonal preservation: drying, canning, lacto-ferment</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FLOATING STRUCTURES -->
+<section>
+  <div class="section-label">Above the Ground</div>
+  <h2>Floating + Elevated Structures</h2>
+  <p>Where the earth dome goes deep, these structures go up. HipCamp premium listings, meditation and art spaces, treehouse lodging along the wash. They set Snowflake Sanctuary apart as a destination — nowhere else looks like this.</p>
+  <div class="float-grid">
+    <div class="float-card">
+      <span class="fc-icon">🛖</span>
+      <span class="fc-title">Treehouse · Wash Corridor</span>
+      <p class="fc-desc">Built into the larger junipers along the wash. Cable-anchored for load distribution. Sleeping platform + small sitting area. Off-grid. HipCamp premium listing. The most requested stay.</p>
+    </div>
+    <div class="float-card">
+      <span class="fc-icon">🛏</span>
+      <span class="fc-title">Elevated Sleeping Pods (×2)</span>
+      <p class="fc-desc">Off-ground on post foundations. No digging, no foundation. Lightweight timber or salvage frame. Private, insulated, off-grid. Views across the juniper canopy. HipCamp premium.</p>
+    </div>
+    <div class="float-card">
+      <span class="fc-icon">🧘</span>
+      <span class="fc-title">Floating Platforms · Crescent Pools</span>
+      <p class="fc-desc">Lightweight cedar or recycled-lumber platforms anchored over the crescent pools. Used for yoga, meditation, painting, small gatherings. Rise and fall with water level on vertical pole anchors.</p>
+    </div>
+    <div class="float-card">
+      <span class="fc-icon">🌉</span>
+      <span class="fc-title">Suspended Walkway</span>
+      <p class="fc-desc">Cable-supported bridge between elevated structures. Juniper timber decking, rope rail. Connects treehouse to pod or central point. The most photographed element on the property.</p>
+    </div>
+    <div class="float-card">
+      <span class="fc-icon">🌿</span>
+      <span class="fc-title">Chinampa Garden Rafts · Main Pond</span>
+      <p class="fc-desc">2–5 edge-based peninsula beds and semi-floating rafts in the main pond. Reeds + brush + compost layers, root-bound over time. Mint, watercress, chard, kale, cattails. Shade reduces evaporation. Fish waste feeds plants.</p>
+    </div>
+    <div class="float-card">
+      <span class="fc-icon">🎬</span>
+      <span class="fc-title">Central Station Deck</span>
+      <p class="fc-desc">John's elevated green screen deck. Built into or adjacent to the central station. Clean sight lines, north-facing diffuse light. Doubles as community presentation space and content creation studio.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  SNOWFLAKE SANCTUARY · RESIDENT HOMES · SNOWFLAKE, ARIZONA<br><br>
+  <a href="index.html" style="color:rgba(200,151,58,0.5);text-decoration:none;letter-spacing:0.15em;">← BACK TO OVERVIEW</a>
+</footer>
+</body>
+</html>

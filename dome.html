@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Earth Dome — Snowflake Sanctuary</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --earth: #100a05; --soil: #1e1208; --clay: #8B3A1C; --clay-light: #b85a35;
+  --ochre: #C8973A; --ochre-pale: #e8c87a; --bone: #F2EAD8; --bone-dark: #ddd0b8;
+  --sage: #4a6b2e; --sage-light: #6a9045; --sky: #4A7A9B; --sky-light: #7aaec8;
+  --sand: #c4a87a; --rust: #9B3E1C; --juniper: #2D4A1E;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--earth); color:var(--bone); font-family:'Crimson Text',Georgia,serif; font-size:18px; line-height:1.7; overflow-x:hidden; }
+body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:1000; opacity:0.4; }
+
+nav { position:fixed; top:0; left:0; right:0; z-index:500; background:rgba(16,10,5,0.92); backdrop-filter:blur(12px); border-bottom:1px solid rgba(200,151,58,0.2); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:56px; }
+.nav-logo { font-family:'Cinzel',serif; font-size:0.9rem; letter-spacing:0.15em; color:var(--ochre); text-decoration:none; }
+.nav-links { display:flex; gap:0.25rem; }
+.nav-links a { padding:0.35rem 0.75rem; font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.12em; color:rgba(242,234,216,0.6); text-decoration:none; border:1px solid transparent; border-radius:2px; transition:all 0.2s; text-transform:uppercase; }
+.nav-links a:hover, .nav-links a.active { color:var(--ochre); border-color:rgba(200,151,58,0.3); background:rgba(200,151,58,0.08); }
+
+.page-hero { padding:8rem 2rem 4rem; text-align:center; max-width:900px; margin:0 auto; }
+.page-eyebrow { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.3em; color:var(--ochre); text-transform:uppercase; margin-bottom:1rem; }
+.page-title { font-family:'Cinzel',serif; font-size:clamp(2rem,5vw,4rem); font-weight:900; color:var(--bone); margin-bottom:1rem; line-height:1.1; }
+.page-sub { font-size:1.1rem; color:var(--sand); font-style:italic; max-width:600px; margin:0 auto 2rem; }
+
+section { padding:4rem 2rem; max-width:1100px; margin:0 auto; }
+.section-label { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.3em; color:var(--ochre); text-transform:uppercase; margin-bottom:0.75rem; }
+h2 { font-family:'Cinzel',serif; font-size:clamp(1.4rem,2.5vw,2rem); color:var(--bone); margin-bottom:1.5rem; }
+h3 { font-family:'Cinzel',serif; font-size:1rem; color:var(--ochre-pale); margin-bottom:0.5rem; }
+.divider { width:100%; height:1px; background:linear-gradient(to right, transparent, rgba(200,151,58,0.3), transparent); }
+
+/* CROSS SECTION */
+.cross-section-wrap {
+  background:rgba(20,12,5,0.9);
+  border:1px solid rgba(200,151,58,0.15);
+  border-radius:12px;
+  padding:2rem;
+  position:relative;
+}
+.cross-section-wrap h3 {
+  text-align:center; margin-bottom:1.5rem;
+  font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.25em; color:rgba(200,151,58,0.6); text-transform:uppercase;
+}
+#dome-svg { display:block; margin:0 auto; width:100%; max-width:800px; cursor:pointer; }
+
+/* ZONE PANEL */
+.zone-panel {
+  margin-top:1.5rem;
+  background:rgba(30,18,8,0.8);
+  border:1px solid rgba(200,151,58,0.2);
+  border-radius:8px;
+  padding:1.75rem;
+  min-height:120px;
+  transition:all 0.3s;
+}
+.zone-panel-title { font-family:'Cinzel',serif; font-size:1rem; color:var(--ochre-pale); margin-bottom:0.5rem; }
+.zone-panel-content { font-size:0.9rem; color:rgba(242,234,216,0.7); line-height:1.7; }
+.zone-hint { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.2em; color:rgba(242,234,216,0.25); text-align:center; margin-top:0.75rem; }
+
+/* SPECS GRID */
+.specs-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+  gap:1rem;
+  margin-top:1.5rem;
+}
+.spec-card {
+  background:rgba(30,18,8,0.7);
+  border:1px solid rgba(200,151,58,0.12);
+  border-radius:8px;
+  padding:1.5rem;
+}
+.spec-card h3 { font-size:0.85rem; margin-bottom:1rem; }
+.spec-list { list-style:none; font-size:0.85rem; color:rgba(242,234,216,0.65); line-height:2; }
+.spec-list li::before { content:'·  '; color:var(--ochre); }
+
+/* MATERIALS */
+.mat-table { width:100%; border-collapse:collapse; margin-top:1rem; }
+.mat-table th { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.15em; color:var(--ochre); padding:0.6rem 1rem; border-bottom:1px solid rgba(200,151,58,0.2); text-align:left; background:rgba(200,151,58,0.04); text-transform:uppercase; }
+.mat-table td { padding:0.55rem 1rem; font-size:0.88rem; color:rgba(242,234,216,0.7); border-bottom:1px solid rgba(255,255,255,0.04); }
+.mat-table tr:last-child td { border-bottom:none; }
+.cost-tag { display:inline-block; padding:0.1rem 0.6rem; border:1px solid rgba(200,151,58,0.3); border-radius:12px; font-family:'Cinzel',serif; font-size:0.62rem; color:var(--ochre-pale); }
+
+/* AQUAPONICS */
+.loop-box {
+  background:rgba(10,20,35,0.8);
+  border:1px solid rgba(74,122,155,0.25);
+  border-radius:8px;
+  padding:1.75rem;
+  margin-top:1rem;
+}
+.loop-box h3 { color:var(--sky-light); }
+.loop-flow { display:flex; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-top:1rem; }
+.flow-node { background:rgba(74,122,155,0.15); border:1px solid rgba(74,122,155,0.3); border-radius:6px; padding:0.5rem 0.9rem; font-family:'Cinzel',serif; font-size:0.7rem; color:var(--sky-light); letter-spacing:0.08em; }
+.flow-arrow { color:rgba(74,122,155,0.5); font-size:1.2rem; }
+
+footer { border-top:1px solid rgba(200,151,58,0.1); padding:3rem 2rem; text-align:center; font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.2em; color:rgba(242,234,216,0.25); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">✦ Snowflake Sanctuary</a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="dome.html" class="active">Dome</a>
+    <a href="geoships.html">Residents</a>
+    <a href="map.html">Map</a>
+    <a href="constitution.html">Covenant</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Architecture · Passive Thermal Mass</div>
+  <h1 class="page-title">The Earth Dome</h1>
+  <p class="page-sub">Buried under composted soil at higher elevation. A hobbit door leads down into 800 square feet of earth-sheltered living — 55–65°F year-round without mechanical heating or cooling.</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- CROSS SECTION -->
+<section>
+  <div class="section-label">Interactive Cross-Section</div>
+  <h2>Click any zone to explore</h2>
+  <div class="cross-section-wrap">
+    <h3>North–South Section · Not to Scale</h3>
+    <svg id="dome-svg" viewBox="0 0 780 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="soilGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4a2a0a" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#2a1505" stop-opacity="1"/>
+        </linearGradient>
+        <linearGradient id="domeGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a3020" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#0d1a10" stop-opacity="1"/>
+        </linearGradient>
+        <linearGradient id="skyGrad" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#0d1520"/>
+          <stop offset="100%" stop-color="#1a2a3a"/>
+        </linearGradient>
+        <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="rgba(100,60,20,0.3)" stroke-width="1"/>
+        </pattern>
+      </defs>
+
+      <!-- SKY / GRADE LEVEL -->
+      <rect x="0" y="0" width="780" height="130" fill="url(#skyGrad)"/>
+      <!-- Grade line -->
+      <line x1="0" y1="130" x2="780" y2="130" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" stroke-dasharray="8,4"/>
+      <text x="12" y="124" font-family="Cinzel,serif" font-size="9" fill="rgba(200,151,58,0.5)" letter-spacing="2">GRADE LEVEL</text>
+
+      <!-- EARTH / SOIL covering dome -->
+      <ellipse cx="360" cy="130" rx="230" ry="80" fill="url(#soilGrad)"/>
+      <ellipse cx="360" cy="130" rx="230" ry="80" fill="url(#hatch)"/>
+      <!-- Living roof label -->
+      <text x="360" y="108" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="rgba(196,168,122,0.6)" letter-spacing="1.5">LIVING ROOF · STRAWBERRIES + HERBS</text>
+      <!-- Small plants on roof -->
+      <text x="300" y="122" font-size="10">🌱</text>
+      <text x="340" y="118" font-size="10">🌿</text>
+      <text x="375" y="120" font-size="10">🌱</text>
+      <text x="410" y="117" font-size="10">🌿</text>
+
+      <!-- HOBBIT DOOR ENTRY STRUCTURE at grade -->
+      <!-- Entry mound -->
+      <ellipse cx="220" cy="130" rx="60" ry="25" fill="#3a1e08" stroke="rgba(139,58,28,0.5)" stroke-width="1.5"/>
+      <!-- Door frame -->
+      <rect x="198" y="108" width="44" height="38" rx="22" fill="#1a0d05" stroke="#8B3A1C" stroke-width="2.5"/>
+      <!-- Door -->
+      <rect x="202" y="112" width="36" height="32" rx="18" fill="#2a1208" stroke="rgba(139,58,28,0.4)" stroke-width="1.5"/>
+      <!-- Hobbit door circle -->
+      <circle cx="220" cy="128" r="16" fill="none" stroke="rgba(139,58,28,0.3)" stroke-width="1"/>
+      <!-- Door knob -->
+      <circle cx="230" cy="128" r="2.5" fill="#C8973A"/>
+      <text x="220" y="155" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.7)" letter-spacing="1">ENTRY</text>
+
+      <!-- LOFT STRUCTURE (small room at grade, connects to dome) -->
+      <rect x="240" y="95" width="80" height="55" rx="4" fill="rgba(30,15,5,0.95)" stroke="rgba(139,58,28,0.4)" stroke-width="1.5"/>
+      <!-- Loft window -->
+      <rect x="252" y="102" width="18" height="12" rx="2" fill="rgba(74,122,155,0.25)" stroke="rgba(74,122,155,0.4)" stroke-width="1"/>
+      <!-- Bookshelf symbol -->
+      <rect x="298" y="104" width="14" height="30" fill="rgba(100,60,20,0.4)" stroke="rgba(100,60,20,0.6)" stroke-width="1"/>
+      <line x1="298" y1="112" x2="312" y2="112" stroke="rgba(100,60,20,0.6)" stroke-width="0.8"/>
+      <line x1="298" y1="118" x2="312" y2="118" stroke="rgba(100,60,20,0.6)" stroke-width="0.8"/>
+      <line x1="298" y1="124" x2="312" y2="124" stroke="rgba(100,60,20,0.6)" stroke-width="0.8"/>
+      <!-- Hammock icon -->
+      <path d="M256,122 Q263,128 270,122" fill="none" stroke="rgba(200,151,58,0.5)" stroke-width="1.5"/>
+      <line x1="256" y1="122" x2="256" y2="115" stroke="rgba(200,151,58,0.4)" stroke-width="1"/>
+      <line x1="270" y1="122" x2="270" y2="115" stroke="rgba(200,151,58,0.4)" stroke-width="1"/>
+      <text x="280" y="158" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.7)" letter-spacing="1">LOFT · MEZZANINE</text>
+
+      <!-- STAIRCASE down from loft to dome -->
+      <!-- Staircase visual: diagonal steps -->
+      <g opacity="0.8">
+        <line x1="310" y1="148" x2="330" y2="170" stroke="rgba(200,151,58,0.5)" stroke-width="1.5"/>
+        <line x1="318" y1="148" x2="318" y2="158" stroke="rgba(200,151,58,0.4)" stroke-width="1.2"/>
+        <line x1="324" y1="155" x2="324" y2="165" stroke="rgba(200,151,58,0.4)" stroke-width="1.2"/>
+        <line x1="330" y1="162" x2="330" y2="172" stroke="rgba(200,151,58,0.4)" stroke-width="1.2"/>
+      </g>
+      <text x="320" y="185" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.5)" letter-spacing="1">OPEN STAIR</text>
+
+      <!-- MAIN DOME SHELL (below grade) -->
+      <!-- Dome arc -->
+      <path d="M130,340 Q130,190 360,180 Q590,190 590,340 Z" fill="url(#domeGrad)" stroke="rgba(74,107,46,0.4)" stroke-width="2"/>
+      <!-- Dome inner circle suggestion -->
+      <path d="M150,340 Q150,205 360,196 Q570,205 570,340 Z" fill="none" stroke="rgba(74,107,46,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- LOFT OPENING / RAILING (the mezzanine looking down) -->
+      <!-- Loft floor inside dome -->
+      <rect x="220" y="220" width="130" height="14" rx="3" fill="rgba(80,45,15,0.8)" stroke="rgba(139,58,28,0.5)" stroke-width="1.5"/>
+      <!-- Railing posts -->
+      <line x1="230" y1="220" x2="230" y2="205" stroke="rgba(139,58,28,0.5)" stroke-width="1.5"/>
+      <line x1="250" y1="220" x2="250" y2="205" stroke="rgba(139,58,28,0.5)" stroke-width="1.5"/>
+      <line x1="270" y1="220" x2="270" y2="205" stroke="rgba(139,58,28,0.5)" stroke-width="1.5"/>
+      <line x1="290" y1="220" x2="290" y2="205" stroke="rgba(139,58,28,0.5)" stroke-width="1.5"/>
+      <line x1="310" y1="220" x2="310" y2="205" stroke="rgba(139,58,28,0.5)" stroke-width="1.5"/>
+      <!-- Railing rail -->
+      <line x1="228" y1="206" x2="312" y2="206" stroke="rgba(139,58,28,0.6)" stroke-width="1.5"/>
+      <!-- Void below railing = open to main space -->
+      <text x="265" y="218" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(200,151,58,0.5)" letter-spacing="1">LOFT OPEN TO BELOW</text>
+
+      <!-- BEDROOM ZONE (left) -->
+      <rect id="zone-bedroom" x="148" y="250" width="145" height="82" rx="4" fill="rgba(80,30,10,0.3)" stroke="rgba(139,58,28,0.35)" stroke-width="1.5" class="zone-hotspot" style="cursor:pointer" data-zone="bedroom"/>
+      <text x="220" y="286" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="rgba(200,151,58,0.7)" letter-spacing="1.5" style="pointer-events:none">BEDROOM</text>
+      <text x="220" y="300" text-anchor="middle" font-family="Crimson Text,serif" font-size="8.5" fill="rgba(242,234,216,0.4)" style="pointer-events:none">claw-foot tub alcove</text>
+      <!-- Bed symbol -->
+      <rect x="158" y="264" width="32" height="20" rx="3" fill="rgba(80,40,15,0.6)" stroke="rgba(139,58,28,0.3)" stroke-width="1"/>
+
+      <!-- KITCHEN + LIVING ZONE (center) -->
+      <rect id="zone-kitchen" x="298" y="215" width="175" height="117" rx="4" fill="rgba(50,80,30,0.25)" stroke="rgba(74,107,46,0.35)" stroke-width="1.5" class="zone-hotspot" style="cursor:pointer" data-zone="kitchen"/>
+      <text x="385" y="265" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="rgba(200,151,58,0.7)" letter-spacing="1.5" style="pointer-events:none">KITCHEN + LIVING</text>
+      <text x="385" y="280" text-anchor="middle" font-family="Crimson Text,serif" font-size="8.5" fill="rgba(242,234,216,0.4)" style="pointer-events:none">herb floor · rocket heater</text>
+      <!-- Table symbol -->
+      <ellipse cx="385" cy="300" rx="20" ry="12" fill="rgba(80,50,20,0.4)" stroke="rgba(139,58,28,0.3)" stroke-width="1"/>
+
+      <!-- BATHROOM ZONE (right) -->
+      <rect id="zone-bath" x="445" y="255" width="120" height="77" rx="4" fill="rgba(30,50,80,0.3)" stroke="rgba(74,122,155,0.35)" stroke-width="1.5" class="zone-hotspot" style="cursor:pointer" data-zone="bath"/>
+      <text x="505" y="288" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="rgba(200,151,58,0.7)" letter-spacing="1.5" style="pointer-events:none">BATHROOM</text>
+      <text x="505" y="302" text-anchor="middle" font-family="Crimson Text,serif" font-size="8.5" fill="rgba(242,234,216,0.4)" style="pointer-events:none">skylight shower shaft</text>
+
+      <!-- SKYLIGHT SHOWER SHAFT -->
+      <rect x="498" y="130" width="24" height="128" rx="2" fill="rgba(74,122,155,0.12)" stroke="rgba(74,122,155,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="510" y="124" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(74,122,155,0.6)" letter-spacing="1">SKYLIGHT</text>
+      <!-- Sun rays at top -->
+      <line x1="510" y1="30" x2="510" y2="60" stroke="rgba(200,151,58,0.3)" stroke-width="1.5"/>
+      <line x1="494" y1="40" x2="506" y2="55" stroke="rgba(200,151,58,0.2)" stroke-width="1"/>
+      <line x1="526" y1="40" x2="514" y2="55" stroke="rgba(200,151,58,0.2)" stroke-width="1"/>
+      <circle cx="510" cy="25" r="8" fill="none" stroke="rgba(200,151,58,0.3)" stroke-width="1.5"/>
+
+      <!-- FLOOR / AQUAPONICS LEVEL -->
+      <rect x="135" y="335" width="450" height="8" rx="2" fill="rgba(60,35,10,0.8)" stroke="rgba(100,60,20,0.4)" stroke-width="1"/>
+
+      <!-- AQUAPONICS TANKS (below floor) -->
+      <!-- Glass panels -->
+      <rect id="zone-aqua" x="175" y="343" width="110" height="55" rx="3" fill="rgba(20,50,80,0.5)" stroke="rgba(74,122,155,0.5)" stroke-width="1.5" class="zone-hotspot" style="cursor:pointer" data-zone="aqua"/>
+      <!-- Water effect in tanks -->
+      <rect x="177" y="355" width="106" height="41" rx="2" fill="rgba(30,70,110,0.4)"/>
+      <path d="M177,362 Q205,358 233,362 Q261,366 283,362" fill="none" stroke="rgba(74,122,155,0.4)" stroke-width="1"/>
+      <path d="M177,370 Q205,366 233,370 Q261,374 283,370" fill="none" stroke="rgba(74,122,155,0.3)" stroke-width="1"/>
+      <!-- Fish symbols -->
+      <text x="205" y="378" font-size="11" text-anchor="middle">🐟</text>
+      <text x="245" y="375" font-size="10" text-anchor="middle">🐟</text>
+      <text x="193" y="365" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(122,174,200,0.7)" letter-spacing="1" style="pointer-events:none">AQUAPONICS</text>
+
+      <!-- COOL STORAGE -->
+      <rect id="zone-storage" x="305" y="343" width="90" height="55" rx="3" fill="rgba(20,25,15,0.6)" stroke="rgba(74,107,46,0.35)" stroke-width="1.5" class="zone-hotspot" style="cursor:pointer" data-zone="storage"/>
+      <text x="350" y="370" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(106,144,69,0.7)" letter-spacing="1" style="pointer-events:none">COOL STORAGE</text>
+      <text x="350" y="382" text-anchor="middle" font-family="Crimson Text,serif" font-size="7.5" fill="rgba(242,234,216,0.35)" style="pointer-events:none">root cellar temps</text>
+
+      <!-- UTILITIES -->
+      <rect x="410" y="343" width="80" height="55" rx="3" fill="rgba(25,15,5,0.7)" stroke="rgba(139,58,28,0.25)" stroke-width="1.5"/>
+      <text x="450" y="368" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.5)" letter-spacing="1">UTILITIES</text>
+      <text x="450" y="380" text-anchor="middle" font-family="Crimson Text,serif" font-size="7.5" fill="rgba(242,234,216,0.3)">cistern · DC pump</text>
+      <text x="450" y="391" text-anchor="middle" font-family="Crimson Text,serif" font-size="7.5" fill="rgba(242,234,216,0.3)">graywater routing</text>
+
+      <!-- GREENHOUSE connected by earth berm corridor -->
+      <!-- Corridor -->
+      <rect x="590" y="240" width="60" height="22" rx="2" fill="rgba(40,60,30,0.5)" stroke="rgba(74,107,46,0.3)" stroke-width="1.5"/>
+      <text x="620" y="254" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(74,107,46,0.7)" letter-spacing="0.5">BERM CORRIDOR</text>
+      <!-- Greenhouse structure -->
+      <rect id="zone-greenhouse" x="648" y="190" width="110" height="130" rx="4" fill="rgba(20,50,25,0.5)" stroke="rgba(74,107,46,0.5)" stroke-width="1.5" class="zone-hotspot" style="cursor:pointer" data-zone="greenhouse"/>
+      <!-- Greenhouse roof triangle -->
+      <path d="M648,190 L703,150 L758,190" fill="rgba(20,50,25,0.3)" stroke="rgba(74,107,46,0.5)" stroke-width="1.5"/>
+      <!-- Greenhouse glazing lines -->
+      <line x1="675" y1="165" x2="675" y2="190" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <line x1="703" y1="152" x2="703" y2="190" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <line x1="730" y1="165" x2="730" y2="190" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+      <!-- Plants inside greenhouse -->
+      <text x="660" y="230" font-size="12">🌿</text>
+      <text x="685" y="245" font-size="12">🍅</text>
+      <text x="710" y="228" font-size="12">🌿</text>
+      <text x="735" y="242" font-size="11">🌱</text>
+      <!-- Graywater bed -->
+      <rect x="652" y="295" width="102" height="20" rx="2" fill="rgba(30,70,110,0.3)" stroke="rgba(74,122,155,0.3)" stroke-width="1"/>
+      <text x="703" y="308" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(74,122,155,0.6)" letter-spacing="0.5">GRAYWATER BED</text>
+      <text x="703" y="265" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.6)" letter-spacing="1" style="pointer-events:none">GREENHOUSE</text>
+
+      <!-- ROCKET MASS HEATER -->
+      <circle cx="360" cy="310" r="14" fill="rgba(139,58,28,0.3)" stroke="rgba(139,58,28,0.5)" stroke-width="1.5" class="zone-hotspot" style="cursor:pointer" id="zone-heater" data-zone="heater"/>
+      <text x="360" y="313" text-anchor="middle" font-size="12">🔥</text>
+      <text x="360" y="335" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.6)" letter-spacing="1">RMH</text>
+
+      <!-- CISTERN (outside, south face) -->
+      <ellipse cx="100" cy="290" rx="28" ry="35" fill="rgba(20,50,80,0.4)" stroke="rgba(74,122,155,0.4)" stroke-width="1.5"/>
+      <text x="100" y="293" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(122,174,200,0.7)" letter-spacing="0.5">CISTERN</text>
+
+      <!-- Solar tube (north face, passive light) -->
+      <rect x="168" y="130" width="16" height="70" rx="2" fill="rgba(200,151,58,0.1)" stroke="rgba(200,151,58,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="140" y="165" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.4)" letter-spacing="0.5">SOLAR TUBE</text>
+
+      <!-- DIMENSION CALLOUTS -->
+      <!-- Dome diameter -->
+      <line x1="135" y1="415" x2="585" y2="415" stroke="rgba(200,151,58,0.2)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#dimArr)" marker-start="url(#dimArr2)"/>
+      <text x="360" y="430" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="rgba(200,151,58,0.45)" letter-spacing="1">~32 FT DIAMETER · 800 SF</text>
+
+      <!-- Floor to apex height -->
+      <line x1="60" y1="185" x2="60" y2="340" stroke="rgba(200,151,58,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="35" y="265" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.4)" letter-spacing="0.5" transform="rotate(-90,35,265)">~16 FT TALL</text>
+
+      <!-- Grade indicator -->
+      <line x1="0" y1="130" x2="130" y2="130" stroke="rgba(200,151,58,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
+      <!-- Buried depth indicator -->
+      <line x1="48" y1="130" x2="48" y2="345" stroke="rgba(139,58,28,0.3)" stroke-width="1" stroke-dasharray="2,3"/>
+      <text x="25" y="245" font-family="Cinzel,serif" font-size="8" fill="rgba(139,58,28,0.5)" letter-spacing="0.5" transform="rotate(-90,25,245)">BURIED</text>
+
+      <!-- LEGEND -->
+      <rect x="12" y="450" width="750" height="55" rx="4" fill="rgba(30,18,8,0.6)"/>
+      <text x="28" y="468" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.5)" letter-spacing="1.5">CLICK ZONES:</text>
+      <rect x="110" y="458" width="10" height="10" rx="2" fill="rgba(80,30,10,0.6)" stroke="rgba(139,58,28,0.5)" stroke-width="1"/>
+      <text x="125" y="468" font-family="Crimson Text,serif" font-size="9" fill="rgba(242,234,216,0.5)">Bedroom</text>
+      <rect x="190" y="458" width="10" height="10" rx="2" fill="rgba(50,80,30,0.4)" stroke="rgba(74,107,46,0.5)" stroke-width="1"/>
+      <text x="205" y="468" font-family="Crimson Text,serif" font-size="9" fill="rgba(242,234,216,0.5)">Kitchen/Living</text>
+      <rect x="295" y="458" width="10" height="10" rx="2" fill="rgba(30,50,80,0.4)" stroke="rgba(74,122,155,0.5)" stroke-width="1"/>
+      <text x="310" y="468" font-family="Crimson Text,serif" font-size="9" fill="rgba(242,234,216,0.5)">Bathroom</text>
+      <rect x="385" y="458" width="10" height="10" rx="2" fill="rgba(20,50,80,0.5)" stroke="rgba(74,122,155,0.5)" stroke-width="1"/>
+      <text x="400" y="468" font-family="Crimson Text,serif" font-size="9" fill="rgba(242,234,216,0.5)">Aquaponics</text>
+      <rect x="470" y="458" width="10" height="10" rx="2" fill="rgba(20,25,15,0.6)" stroke="rgba(74,107,46,0.4)" stroke-width="1"/>
+      <text x="485" y="468" font-family="Crimson Text,serif" font-size="9" fill="rgba(242,234,216,0.5)">Cool Storage</text>
+      <rect x="560" y="458" width="10" height="10" rx="2" fill="rgba(20,50,25,0.5)" stroke="rgba(74,107,46,0.5)" stroke-width="1"/>
+      <text x="575" y="468" font-family="Crimson Text,serif" font-size="9" fill="rgba(242,234,216,0.5)">Greenhouse</text>
+      <rect x="645" y="458" width="10" height="10" rx="2" fill="rgba(139,58,28,0.3)" stroke="rgba(139,58,28,0.5)" stroke-width="1"/>
+      <text x="660" y="468" font-family="Crimson Text,serif" font-size="9" fill="rgba(242,234,216,0.5)">Heater</text>
+    </svg>
+
+    <div id="zone-panel" class="zone-panel">
+      <div class="zone-panel-title">↑ Click any zone in the diagram above</div>
+      <div class="zone-panel-content">Each zone reveals materials, systems, cost estimates, and design rationale for that part of the dome.</div>
+    </div>
+    <p class="zone-hint">HOVER OR CLICK ANY SHADED ZONE</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AQUAPONICS LOOP -->
+<section>
+  <div class="section-label">Living Systems</div>
+  <h2>Aquaponics + Graywater Loop</h2>
+  <div class="loop-box">
+    <h3>The Water Cycle Inside the Dome</h3>
+    <p style="font-size:0.9rem;color:rgba(242,234,216,0.6);margin:0.75rem 0 1rem;">No plastic pipes. Gravity-fed where possible. DC solar pump for the rest. The fish tanks are visible through removable floor panels — aquaponics without infrastructure theater.</p>
+    <div class="loop-flow">
+      <div class="flow-node">🐟 Fish Tanks<br><span style="font-size:0.65rem;opacity:0.6;">tilapia or bluegill</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">🌿 Herb Growbeds<br><span style="font-size:0.65rem;opacity:0.6;">kitchen floor + adjacent</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">💧 Filtered Water<br><span style="font-size:0.65rem;opacity:0.6;">back to fish tanks</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">🐟 Fish Tanks</div>
+    </div>
+    <div class="loop-flow" style="margin-top:1rem;">
+      <div class="flow-node">🚿 Sink + Shower<br><span style="font-size:0.65rem;opacity:0.6;">graywater source</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">🪨 Fiber Filter<br><span style="font-size:0.65rem;opacity:0.6;">grease + solids</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">🏡 Greenhouse Beds<br><span style="font-size:0.65rem;opacity:0.6;">gravel + soil biofilter</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">🌳 Orchard Swales<br><span style="font-size:0.65rem;opacity:0.6;">overflow to food forest</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SPECS -->
+<section>
+  <div class="section-label">Technical Specifications</div>
+  <h2>Materials + Systems</h2>
+  <div class="specs-grid">
+    <div class="spec-card">
+      <h3>🏗 Structure</h3>
+      <ul class="spec-list">
+        <li>Earthbag or compressed earth block shell</li>
+        <li>~32 ft diameter · 800 SF living level</li>
+        <li>2–4 ft composted soil burial with living roof</li>
+        <li>Juniper timber: interior accents, shelving, door frames</li>
+        <li>Rammed earth retaining walls for buried roof</li>
+        <li>Cob + earthen plaster interior finish · breathable</li>
+        <li>Adobe knee walls on greenhouse</li>
+      </ul>
+    </div>
+    <div class="spec-card">
+      <h3>🌡 Thermal</h3>
+      <ul class="spec-list">
+        <li>Passive thermal mass holds 55–65°F year-round</li>
+        <li>High diurnal swings (40°F+) absorbed by buried mass</li>
+        <li>Rocket mass heater · juniper fuel · ultra-efficient</li>
+        <li>Earth tube ventilation · small diameter · filtered</li>
+        <li>South greenhouse as solar heat battery in winter</li>
+        <li>Adjustable vents manage greenhouse → dome airflow</li>
+      </ul>
+    </div>
+    <div class="spec-card">
+      <h3>💧 Water</h3>
+      <ul class="spec-list">
+        <li>Cistern fed by greenhouse roof + external catchment</li>
+        <li>Thermosiphon hot water · south slope metal panel</li>
+        <li>Aquaponics DC pump · solar powered</li>
+        <li>Graywater → greenhouse → orchard swales</li>
+        <li>Blackwater → composting toilet vault</li>
+        <li>Olla floor irrigation in herb zones</li>
+      </ul>
+    </div>
+    <div class="spec-card">
+      <h3>⚡ Energy</h3>
+      <ul class="spec-list">
+        <li>2–4 kW off-grid solar array + battery bank</li>
+        <li>Direct DC circuits for pumps + fans</li>
+        <li>Solar dehydrator in utility alcove</li>
+        <li>Solar oven (external south-facing)</li>
+        <li>Hand-crank or plunger-barrel washer</li>
+        <li>No dependency on grid · redundancy built in</li>
+      </ul>
+    </div>
+    <div class="spec-card">
+      <h3>🌱 Indoor Growing</h3>
+      <ul class="spec-list">
+        <li>Substrate floors: gravel → sand → compost → pavers</li>
+        <li>Moisture channels connect to aquaponics sump</li>
+        <li>Shallow herbs, greens, mushrooms, microgreens in floor</li>
+        <li>Kitchen herb growbed above fish tanks</li>
+        <li>Greenhouse: berries, dwarf citrus, figs, tomatoes</li>
+        <li>Removable wood slats allow floor access</li>
+      </ul>
+    </div>
+    <div class="spec-card">
+      <h3>💰 Cost Estimate</h3>
+      <ul class="spec-list">
+        <li>Earthbag shell + airform: $18–25k</li>
+        <li>Concrete + labor (WWOOF): $8–12k</li>
+        <li>Utilities rough-in: $4–6k</li>
+        <li>Interior finish (cob, plaster, floor): $3–5k</li>
+        <li>Composted soil burial (on-site): ~$0</li>
+        <li>Aquaponics system: $2–4k</li>
+        <li><strong>Total: $35–52k · primary use of John's $45k</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MATERIALS TABLE -->
+<section>
+  <div class="section-label">Build Philosophy</div>
+  <h2>On-Site vs Purchased Materials</h2>
+  <p style="color:rgba(242,234,216,0.6);max-width:700px;margin-bottom:1.5rem;">The dome is primarily built from what the land already has. Cash outlay is limited to hardware, roofing, glazing, and permit fees.</p>
+  <table class="mat-table">
+    <thead>
+      <tr><th>Material</th><th>Source</th><th>Cost</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Red clay soil (walls, plaster, cob)</td><td>On-site, excavated</td><td><span class="cost-tag">$0</span></td></tr>
+      <tr><td>Juniper timber (framing, accents)</td><td>On-site, cleared</td><td><span class="cost-tag">$0</span></td></tr>
+      <tr><td>Composted goat manure (burial soil)</td><td>John's operation</td><td><span class="cost-tag">$0</span></td></tr>
+      <tr><td>Stone (retaining walls, hearth)</td><td>On-site, cleared</td><td><span class="cost-tag">$0</span></td></tr>
+      <tr><td>Earthbag polypropylene tubes</td><td>Purchased</td><td><span class="cost-tag">$800–1,200</span></td></tr>
+      <tr><td>Barbed wire (between bags)</td><td>Purchased</td><td><span class="cost-tag">$300–500</span></td></tr>
+      <tr><td>Polycarbonate glazing (greenhouse)</td><td>Purchased</td><td><span class="cost-tag">$2,000–3,500</span></td></tr>
+      <tr><td>Metal roofing (greenhouse + loft)</td><td>Purchased</td><td><span class="cost-tag">$1,500–2,500</span></td></tr>
+      <tr><td>Plumbing hardware + DC pump</td><td>Purchased</td><td><span class="cost-tag">$1,200–2,000</span></td></tr>
+      <tr><td>Skylight shaft glazing</td><td>Purchased</td><td><span class="cost-tag">$400–800</span></td></tr>
+      <tr><td>Hobbit door ironwork</td><td>Forge on-site (Year 2)</td><td><span class="cost-tag">$0 Year 2+</span></td></tr>
+      <tr><td>Labor</td><td>WWOOF + barter + Lindsay</td><td><span class="cost-tag">$0 payroll</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  SNOWFLAKE SANCTUARY · THE EARTH DOME · SNOWFLAKE, ARIZONA<br><br>
+  <a href="index.html" style="color:rgba(200,151,58,0.5);text-decoration:none;letter-spacing:0.15em;">← BACK TO OVERVIEW</a>
+</footer>
+
+<script>
+const zoneData = {
+  bedroom: {
+    title: '🛏 Bedroom',
+    content: 'Earth walls maintain ~60°F naturally. Claw-foot tub in an east-facing alcove with morning light and thermal mass tile surround — it holds heat from the night before. Built-in juniper shelving. Earthen plaster walls, natural fiber textiles, and no synthetic materials. The bedroom is the quietest part of the dome — farthest from the entry, lowest noise, deepest burial. Natural lime plaster on the walls: moisture-resistant, beautiful, ancient technique.'
+  },
+  kitchen: {
+    title: '🔥 Kitchen + Living',
+    content: 'The heart of the dome. Substrate floor with herbs, microgreens, and mushrooms growing between removable wood slats. The rocket mass heater sits at the convergence of kitchen and living space — it burns juniper efficiently, and the thermal bench radiates heat for 12+ hours after a single firing. Adjacent to the fish tank viewing panel. Kitchen herb growbed above the aquaponics system. The mezzanine loft is directly overhead — you can call down to someone cooking from the railing above.'
+  },
+  bath: {
+    title: '🚿 Bathroom',
+    content: 'Skylight shower shaft: a vertical lime-plastered column that brings diffuse natural light down to the shower. No waterproofing chemicals — lime plaster is naturally antimicrobial and moisture-resistant. Claw-foot tub alcove in the bedroom zone (east or south window, morning light). Graywater exits through fiber filter to greenhouse planting beds, then to orchard swales. Composting toilet handles blackwater — no septic needed. The system is entirely legal and self-contained in Navajo County.'
+  },
+  aqua: {
+    title: '🐟 Aquaponics Tanks',
+    content: 'Tanks recessed into the lower level, visible through toughened glass or removable floor panels in the kitchen/living area. Tilapia or bluegill — both tolerate cool water temperatures well at 5,600 ft. DC solar pump circulates water from tanks to kitchen herb growbed above. Fish waste fertilizes plants, plants filter water, cleaner water supports fish. No plastic pipes in the loop where avoidable — gravity-assist routing through clay channels. Start with a single 200-gallon tank and scale up as the system stabilizes.'
+  },
+  storage: {
+    title: '🥕 Cool Storage',
+    content: 'The lower level stays at root cellar temperatures year-round — 45–55°F — without any mechanical refrigeration. This is the native condition of the buried earth. Ideal for: cheese aging, vegetable storage, seed saving, fermentation crocks, wine. Shelved with juniper. The mushroom tunnel (separate structure nearby) serves a similar function at slightly different humidity. Between the two, the community has year-round cold storage without electricity.'
+  },
+  greenhouse: {
+    title: '🌿 South Greenhouse',
+    content: 'Connected to the main dome via a short insulated earth berm corridor. Functions simultaneously as: solar heat battery in winter (warm air flows into dome), graywater biofilter (planting beds purify sink and shower water), food production (berries, dwarf citrus, figs, tomatoes year-round), and humidity regulator (adjustable vents allow evaporation to moderate the dome interior). Built with locally milled juniper framing, thick polycarbonate glazing, and earthbag knee walls. South-facing for maximum winter solar gain at this latitude.'
+  },
+  heater: {
+    title: '🔥 Rocket Mass Heater',
+    content: 'The most efficient wood-burning heating system known. Burns at very high temperatures (1,100°C+) which means nearly complete combustion — minimal smoke, minimal particulate. Fuel: fallen juniper from the property, widely available. The thermal bench — a horizontal mass of cob and stone extending from the firebox — stores heat from a single firing and radiates it for 12–18 hours. One firing in the morning warms the dome all day. In a buried structure at this latitude, you may need to fire it fewer than 60 days per year.'
+  }
+};
+
+document.querySelectorAll('.zone-hotspot').forEach(el => {
+  el.addEventListener('click', function() {
+    const zone = this.getAttribute('data-zone');
+    const data = zoneData[zone];
+    if (!data) return;
+    const panel = document.getElementById('zone-panel');
+    panel.style.opacity = '0';
+    panel.style.transform = 'translateY(8px)';
+    setTimeout(() => {
+      panel.querySelector('.zone-panel-title').textContent = data.title;
+      panel.querySelector('.zone-panel-content').textContent = data.content;
+      panel.style.transition = 'all 0.3s ease';
+      panel.style.opacity = '1';
+      panel.style.transform = 'translateY(0)';
+    }, 150);
+  });
+  el.addEventListener('mouseenter', function() {
+    this.style.opacity = '0.85';
+    this.style.filter = 'brightness(1.3)';
+  });
+  el.addEventListener('mouseleave', function() {
+    this.style.opacity = '1';
+    this.style.filter = 'none';
+  });
+});
+</script>
+</body>
+</html>

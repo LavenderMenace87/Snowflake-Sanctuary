@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snowflake Sanctuary — Regenerative Land Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --earth: #100a05;
+  --soil: #1e1208;
+  --clay: #8B3A1C;
+  --clay-light: #b85a35;
+  --ochre: #C8973A;
+  --ochre-pale: #e8c87a;
+  --bone: #F2EAD8;
+  --bone-dark: #ddd0b8;
+  --sage: #4a6b2e;
+  --sage-light: #6a9045;
+  --sky: #4A7A9B;
+  --sky-light: #7aaec8;
+  --sand: #c4a87a;
+  --rust: #9B3E1C;
+  --juniper: #2D4A1E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--earth);
+  color: var(--bone);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  background: rgba(16,10,5,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200,151,58,0.2);
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.nav-logo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  color: var(--ochre);
+  text-decoration: none;
+}
+.nav-links { display: flex; gap: 0.25rem; }
+.nav-links a {
+  padding: 0.35rem 0.75rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: rgba(242,234,216,0.6);
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--ochre);
+  border-color: rgba(200,151,58,0.3);
+  background: rgba(200,151,58,0.08);
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative;
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 60%, rgba(139,58,28,0.15) 0%, transparent 70%),
+              radial-gradient(ellipse at 20% 80%, rgba(74,107,46,0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(74,122,155,0.1) 0%, transparent 50%);
+}
+
+.hero-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--ochre);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  animation: fadeUp 1s ease both;
+}
+.hero-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.8rem, 7vw, 6rem);
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--bone);
+  margin-bottom: 1rem;
+  animation: fadeUp 1s ease 0.15s both;
+}
+.hero-title em {
+  color: var(--ochre);
+  font-style: normal;
+  display: block;
+}
+.hero-sub {
+  font-size: 1.2rem;
+  color: var(--sand);
+  max-width: 600px;
+  margin: 0 auto 1rem;
+  animation: fadeUp 1s ease 0.3s both;
+  font-style: italic;
+}
+.hero-meta {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: rgba(196,168,122,0.6);
+  animation: fadeUp 1s ease 0.45s both;
+  margin-bottom: 3rem;
+}
+
+.hero-tags {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;
+  animation: fadeUp 1s ease 0.6s both;
+}
+.tag {
+  padding: 0.3rem 0.9rem;
+  border: 1px solid rgba(200,151,58,0.3);
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--ochre-pale);
+  background: rgba(200,151,58,0.06);
+}
+
+.scroll-hint {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  font-size: 0.65rem; letter-spacing: 0.2em; color: rgba(242,234,216,0.3);
+  font-family: 'Cinzel', serif;
+  animation: fadeUp 1s ease 1.2s both;
+}
+.scroll-hint::after {
+  content: '';
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, rgba(200,151,58,0.5), transparent);
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+/* SECTION WRAPPER */
+section {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.section-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--ochre);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+h2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 600;
+  color: var(--bone);
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--ochre-pale);
+  margin-bottom: 0.75rem;
+}
+
+/* DIVIDER */
+.divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(200,151,58,0.3), transparent);
+  margin: 0;
+}
+
+/* CLOSED LOOP DIAGRAM */
+.loop-section {
+  background: rgba(30,18,8,0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(200,151,58,0.12);
+  padding: 4rem 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.loop-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(139,58,28,0.08) 0%, transparent 70%);
+}
+.loop-title {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--ochre);
+  text-transform: uppercase;
+  margin-bottom: 3rem;
+}
+
+#loop-svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* NAV CARDS */
+.nav-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 3rem;
+}
+.nav-card {
+  position: relative;
+  background: rgba(30,18,8,0.7);
+  border: 1px solid rgba(200,151,58,0.15);
+  border-radius: 8px;
+  padding: 2rem 1.5rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: block;
+}
+.nav-card::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(to right, transparent, var(--ochre), transparent);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+.nav-card:hover {
+  border-color: rgba(200,151,58,0.4);
+  background: rgba(200,151,58,0.05);
+  transform: translateY(-3px);
+}
+.nav-card:hover::before { transform: scaleX(1); }
+.nc-icon { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+.nc-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  color: var(--ochre-pale);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.nc-desc {
+  font-size: 0.85rem;
+  color: rgba(242,234,216,0.55);
+  line-height: 1.5;
+}
+
+/* CONTRAST SECTION */
+.contrast-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.contrast-card {
+  border-radius: 10px;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.contrast-buried {
+  background: linear-gradient(135deg, rgba(16,10,5,0.9) 0%, rgba(45,30,10,0.9) 100%);
+  border: 1px solid rgba(139,58,28,0.3);
+}
+.contrast-buried::after {
+  content: '▼';
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  font-size: 0.8rem; color: rgba(139,58,28,0.4);
+}
+.contrast-floating {
+  background: linear-gradient(135deg, rgba(8,18,30,0.9) 0%, rgba(20,40,60,0.9) 100%);
+  border: 1px solid rgba(74,122,155,0.3);
+}
+.contrast-floating::after {
+  content: '▲';
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  font-size: 0.8rem; color: rgba(74,122,155,0.4);
+}
+.contrast-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+.contrast-buried h3 { color: var(--clay-light); }
+.contrast-floating h3 { color: var(--sky-light); }
+.contrast-list {
+  list-style: none;
+  font-size: 0.9rem;
+  color: rgba(242,234,216,0.65);
+  line-height: 1.9;
+}
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 2rem; }
+.timeline::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(to bottom, var(--ochre), var(--sage), var(--sky), transparent);
+}
+.tl-item {
+  position: relative;
+  padding: 1.5rem 0 1.5rem 2rem;
+  border-bottom: 1px solid rgba(200,151,58,0.08);
+}
+.tl-item:last-child { border-bottom: none; }
+.tl-dot {
+  position: absolute; left: -2.35rem; top: 1.8rem;
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--ochre);
+  background: var(--earth);
+}
+.tl-phase {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--ochre);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.tl-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--bone);
+  margin-bottom: 0.5rem;
+}
+.tl-items {
+  font-size: 0.88rem;
+  color: rgba(242,234,216,0.6);
+  line-height: 1.8;
+}
+.tl-cost {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.15rem 0.7rem;
+  border: 1px solid rgba(200,151,58,0.3);
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--ochre-pale);
+  letter-spacing: 0.1em;
+}
+
+/* REVENUE TABLE */
+.rev-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+.rev-table th {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  color: var(--ochre);
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(200,151,58,0.25);
+  text-align: left;
+  background: rgba(200,151,58,0.04);
+}
+.rev-table td {
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  color: rgba(242,234,216,0.75);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.rev-table tr:last-child td {
+  color: var(--ochre-pale);
+  font-weight: 600;
+  border-top: 1px solid rgba(200,151,58,0.2);
+  border-bottom: none;
+}
+.rev-table .yr1 { color: var(--sand); }
+.rev-table .yr3 { color: var(--sage-light); }
+
+/* VALUES */
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.value-card {
+  background: rgba(30,18,8,0.6);
+  border: 1px solid rgba(200,151,58,0.12);
+  border-radius: 6px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all 0.2s;
+}
+.value-card:hover { border-color: rgba(200,151,58,0.35); background: rgba(200,151,58,0.05); }
+.value-icon { font-size: 1.5rem; margin-bottom: 0.75rem; display: block; }
+.value-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--ochre-pale);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.value-desc { font-size: 0.8rem; color: rgba(242,234,216,0.5); line-height: 1.5; }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid rgba(200,151,58,0.1);
+  padding: 3rem 2rem;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(242,234,216,0.25);
+}
+
+@media (max-width: 768px) {
+  .contrast-grid { grid-template-columns: 1fr; }
+  .values-grid { grid-template-columns: repeat(3,1fr); }
+  .nav-links a { display: none; }
+  .nav-links a:last-child, .nav-links a:first-child { display: block; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">✦ Snowflake Sanctuary</a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Overview</a>
+    <a href="dome.html">Dome</a>
+    <a href="geoships.html">Residents</a>
+    <a href="map.html">Map</a>
+    <a href="constitution.html">Covenant</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-eyebrow">Snowflake, Arizona · 40 Acres · 5,600 ft</div>
+  <h1 class="hero-title">
+    Snowflake<br>
+    <em>Sanctuary</em>
+  </h1>
+  <p class="hero-sub">A regenerative land lab, intentional community, and artist refuge built on ancient knowledge and futuristic form</p>
+  <div class="hero-meta">Lindsay & John · High Desert Arizona · Closed-Loop Polyculture</div>
+  <div class="hero-tags">
+    <span class="tag">Regenerative Agriculture</span>
+    <span class="tag">Intentional Community</span>
+    <span class="tag">Artist Retreats</span>
+    <span class="tag">Ancient Technologies</span>
+    <span class="tag">Buried + Floating Architecture</span>
+    <span class="tag">WWOOF</span>
+    <span class="tag">HipCamp</span>
+    <span class="tag">Cheesemaking</span>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FIVE VALUES -->
+<section>
+  <div class="section-label">The Foundation</div>
+  <h2>Five Values. One Standard.</h2>
+  <p style="color:rgba(242,234,216,0.6);max-width:700px;margin-bottom:0.5rem;">
+    Every structure, system, and person at Snowflake Sanctuary is evaluated against the same five principles. This is not a list of rules — it is a statement of what this place is.
+  </p>
+  <div class="values-grid">
+    <div class="value-card">
+      <span class="value-icon">🔥</span>
+      <span class="value-name">Creativity</span>
+      <p class="value-desc">Not only art. The way you solve problems, build systems, imagine new forms.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">🌱</span>
+      <span class="value-name">Growth</span>
+      <p class="value-desc">Personal, ecological, communal. Things that stop growing, die.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">🌍</span>
+      <span class="value-name">Land Stewardship</span>
+      <p class="value-desc">You tend this land. You return more than you take.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">✦</span>
+      <span class="value-name">Beauty</span>
+      <p class="value-desc">A standard of craft. The evidence that something was made with intention.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">⚖️</span>
+      <span class="value-name">Responsibility</span>
+      <p class="value-desc">You show up for your commitments. To the land. To the people. To the agreements.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CLOSED LOOP DIAGRAM -->
+<section>
+  <div class="section-label">The System</div>
+  <h2>Closed-Loop Stacked Polyculture</h2>
+  <p style="color:rgba(242,234,216,0.6);max-width:700px;margin-bottom:2rem;">
+    Nothing leaves the system as waste. Every output feeds the next input. This is the operating principle of every ecosystem that has survived — and it is the architecture of Snowflake Sanctuary.
+  </p>
+  <style>
+  .loop-node { cursor: pointer; transition: opacity 0.2s; }
+  .loop-node:hover { opacity: 0.8; }
+  .loop-node.active circle { filter: drop-shadow(0 0 8px rgba(200,151,58,0.6)); }
+  .node-panel {
+    margin-top: 1.5rem;
+    background: rgba(16,10,5,0.9);
+    border: 1px solid rgba(200,151,58,0.2);
+    border-radius: 10px;
+    padding: 1.75rem 2rem;
+    display: none;
+    animation: fadeUp 0.25s ease;
+  }
+  .node-panel.visible { display: block; }
+  .np-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .np-icon { font-size: 1.8rem; }
+  .np-title { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--ochre-pale); }
+  .np-sub { font-size: 0.82rem; color: rgba(242,234,216,0.45); font-style: italic; margin-top: 0.15rem; }
+  .np-body { font-size: 0.92rem; color: rgba(242,234,216,0.7); line-height: 1.75; margin-bottom: 1rem; }
+  .np-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 0.75rem; margin-top: 1rem; }
+  .np-col h4 { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--ochre); text-transform: uppercase; margin-bottom: 0.5rem; }
+  .np-col ul { list-style: none; font-size: 0.82rem; color: rgba(242,234,216,0.6); line-height: 1.9; }
+  .np-col ul li::before { content: '· '; color: var(--ochre); }
+  .np-flow { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.12em; color: rgba(200,151,58,0.5); margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(200,151,58,0.1); }
+  </style>
+
+  <div class="loop-section">
+    <div class="loop-title">The Living System · Click Any Node to Explore</div>
+    <svg id="loop-svg" viewBox="0 0 560 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="rgba(200,151,58,0.6)"/>
+        </marker>
+      </defs>
+
+      <text x="280" y="235" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="rgba(200,151,58,0.5)" letter-spacing="2">CLOSED</text>
+      <text x="280" y="252" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="rgba(200,151,58,0.5)" letter-spacing="2">LOOP</text>
+      <circle cx="280" cy="243" r="55" fill="none" stroke="rgba(200,151,58,0.08)" stroke-width="1"/>
+
+      <!-- ARROWS (drawn first, behind nodes) -->
+      <path d="M314,78 Q370,90 390,112" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <path d="M453,152 Q470,195 476,222" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <path d="M476,278 Q468,320 452,348" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <path d="M392,390 Q345,415 318,432" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <path d="M242,440 Q195,425 172,408" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <path d="M108,360 Q88,315 86,278" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <path d="M88,222 Q100,175 120,152" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <path d="M168,108 Q218,78 248,64" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="280" y1="178" x2="280" y2="215" stroke="rgba(200,151,58,0.2)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- GOATS -->
+      <g class="loop-node" data-node="goats" transform="translate(280,60)">
+        <circle r="38" fill="rgba(139,58,28,0.25)" stroke="rgba(139,58,28,0.5)" stroke-width="1.5"/>
+        <text y="-8" text-anchor="middle" font-size="18">🐐</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8c87a" letter-spacing="1">GOATS</text>
+        <text y="22" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.5)">400 dairy</text>
+      </g>
+
+      <!-- COMPOST -->
+      <g class="loop-node" data-node="compost" transform="translate(420,130)">
+        <circle r="38" fill="rgba(74,107,46,0.25)" stroke="rgba(74,107,46,0.5)" stroke-width="1.5"/>
+        <text y="-8" text-anchor="middle" font-size="18">♻️</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8c87a" letter-spacing="1">COMPOST</text>
+        <text y="22" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.5)">manure + waste</text>
+      </g>
+
+      <!-- SOIL -->
+      <g class="loop-node" data-node="soil" transform="translate(480,250)">
+        <circle r="38" fill="rgba(100,60,20,0.25)" stroke="rgba(100,60,20,0.5)" stroke-width="1.5"/>
+        <text y="-8" text-anchor="middle" font-size="18">🌾</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8c87a" letter-spacing="1">SOIL</text>
+        <text y="22" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.5)">hugels + swales</text>
+      </g>
+
+      <!-- FOOD FOREST -->
+      <g class="loop-node" data-node="forest" transform="translate(420,370)">
+        <circle r="38" fill="rgba(45,74,30,0.25)" stroke="rgba(45,74,30,0.5)" stroke-width="1.5"/>
+        <text y="-8" text-anchor="middle" font-size="18">🌳</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8c87a" letter-spacing="1">FOOD FOREST</text>
+        <text y="22" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.5)">8-layer guild</text>
+      </g>
+
+      <!-- KITCHEN -->
+      <g class="loop-node" data-node="kitchen" transform="translate(280,440)">
+        <circle r="38" fill="rgba(160,80,20,0.25)" stroke="rgba(160,80,20,0.5)" stroke-width="1.5"/>
+        <text y="-8" text-anchor="middle" font-size="18">🔥</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8c87a" letter-spacing="1">KITCHEN</text>
+        <text y="22" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.5)">communal + cheese</text>
+      </g>
+
+      <!-- AQUAPONICS -->
+      <g class="loop-node" data-node="aqua" transform="translate(140,370)">
+        <circle r="38" fill="rgba(30,70,100,0.25)" stroke="rgba(30,70,100,0.5)" stroke-width="1.5"/>
+        <text y="-8" text-anchor="middle" font-size="18">🐟</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8c87a" letter-spacing="1">AQUAPONICS</text>
+        <text y="22" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.5)">fish + floating gardens</text>
+      </g>
+
+      <!-- GREENHOUSE -->
+      <g class="loop-node" data-node="greenhouse" transform="translate(80,250)">
+        <circle r="38" fill="rgba(50,100,50,0.25)" stroke="rgba(50,100,50,0.5)" stroke-width="1.5"/>
+        <text y="-8" text-anchor="middle" font-size="18">🏡</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8c87a" letter-spacing="1">GREENHOUSE</text>
+        <text y="22" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.5)">hydro + microgreens</text>
+      </g>
+
+      <!-- MUSHROOMS -->
+      <g class="loop-node" data-node="mushrooms" transform="translate(140,130)">
+        <circle r="38" fill="rgba(80,50,100,0.25)" stroke="rgba(80,50,100,0.5)" stroke-width="1.5"/>
+        <text y="-8" text-anchor="middle" font-size="18">🍄</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8c87a" letter-spacing="1">MUSHROOMS</text>
+        <text y="22" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.5)">below-ground tunnel</text>
+      </g>
+
+      <!-- APIARY (center) -->
+      <g class="loop-node" data-node="apiary" transform="translate(280,155)">
+        <circle r="22" fill="rgba(200,151,58,0.15)" stroke="rgba(200,151,58,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+        <text y="-4" text-anchor="middle" font-size="12">🐝</text>
+        <text y="10" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.7)" letter-spacing="1">APIARY</text>
+      </g>
+    </svg>
+
+    <!-- NODE DETAIL PANEL -->
+    <div id="node-panel" class="node-panel">
+      <div class="np-header">
+        <span class="np-icon" id="np-icon"></span>
+        <div><div class="np-title" id="np-title"></div><div class="np-sub" id="np-sub"></div></div>
+      </div>
+      <div class="np-body" id="np-body"></div>
+      <div class="np-grid" id="np-grid"></div>
+      <div class="np-flow" id="np-flow"></div>
+    </div>
+
+    <p style="text-align:center;font-size:0.75rem;color:rgba(242,234,216,0.25);font-family:'Cinzel',serif;letter-spacing:0.1em;margin-top:1rem;">
+      Click any node to explore · Every output feeds the next input
+    </p>
+  </div>
+
+  <script>
+  const nodeData = {
+    goats: {
+      icon: '🐐', title: 'Goat Operation', sub: '400 dairy goats · existing operation · anchor revenue',
+      body: 'The agricultural and financial foundation of Snowflake Sanctuary. 400 dairy goats already producing milk under John\'s management. Machine and hand milking. Community labor earns a formal share of dairy and cheese income. Goats graze the juniper understory, reducing fire risk while producing the manure that feeds everything else.',
+      cols: [
+        { head: 'Outputs to System', items: ['Manure → compost → all soil systems', 'Milk → cheese, yogurt, kefir', 'Land clearing → reduces fire risk', 'Whey (cheese byproduct) → pig/chicken feed', 'Spent bedding → hugelkultur base'] },
+        { head: 'Revenue Streams', items: ['Artisan goat cheese $15–25/lb', 'Goat rental for land clearing $400–600/day', 'Raw milk (licensed) to community', 'Fiber if Angora varieties added', 'Community share from dairy income'] },
+        { head: 'Feed Inputs', items: ['Juniper browse + native grasses (free)', 'Spent mushroom substrate', 'Food forest drops and trimmings', 'Greenhouse waste and microgreen roots', 'Hay supplement in winter'] }
+      ],
+      flow: '→ Manure feeds compost hub → Compost feeds soil → Soil feeds food forest'
+    },
+    compost: {
+      icon: '♻️', title: 'Composting Hub', sub: 'Fungal composting · closed-loop fertility · zero external inputs',
+      body: 'Adjacent to the mushroom tunnel, the composting hub operates on fungal biology rather than heat. Six barrel stations process goat manure, kitchen waste, spent mushroom substrate, and wood chips. Fungal mycelium breaks material down faster and produces a richer amendment than bacterial composting. Nothing leaves the property as waste.',
+      cols: [
+        { head: 'Inputs', items: ['Goat manure (400 goats = abundant)', 'Kitchen scraps and food waste', 'Spent mushroom substrate (mycelium-rich)', 'Wood chips from juniper clearing', 'Duck and rabbit manure (cold, direct)', 'Biochar from fire pit (charged in pond)'] },
+        { head: 'Outputs', items: ['Rich compost → all growing systems', 'Compost tea → foliar spray', 'Biochar + compost blend → hugels', 'Worm castings (if worm bin added)', 'Charged biochar → serious soil building'] },
+        { head: 'Process', items: ['6-barrel rotation system', 'Fungal inoculation with oyster spawn', 'No turning required', 'Ready in 4–8 weeks vs 3–6 months', '$0 input cost from Year 2 onward'] }
+      ],
+      flow: '→ Feeds soil building systems: hugels, swales, food forest, and growing beds'
+    },
+    soil: {
+      icon: '🌾', title: 'Soil + Hugelkultur', sub: 'Hugels · swales · crescent pools · water harvesting',
+      body: 'The soil system at Snowflake Sanctuary is built around two ancient technologies suited perfectly to this climate: hugelkultur (buried wood beds that act as underground water batteries) and on-contour swales that slow, spread, and sink the 11 inches of annual rainfall the land receives. Red clay soil is difficult for conventional gardening but excellent for earthen building and responds dramatically to organic matter addition.',
+      cols: [
+        { head: 'Hugelkultur Beds', items: ['Buried juniper logs + goat manure + soil', 'Act as underground water reservoirs', 'Reduce irrigation 60–80% once established', 'Self-fertilizing as wood decomposes', 'Plant Three Sisters on mounds'] },
+        { head: 'Water Harvesting', items: ['On-contour swales catch monsoon rain', 'Half-moon crescent pools at grade breaks', 'Main pond catches wash runoff', 'Cistern from roof catchment', 'Olla buried clay pots at root zone'] },
+        { head: 'Soil Amendment', items: ['Compost + biochar blend', 'Juniper alkaline soil → amend with compost', 'Comfrey chop-and-drop mineral accumulator', 'White clover nitrogen fixation everywhere', 'No purchased fertilizer from Year 2'] }
+      ],
+      flow: '→ Enriched soil feeds food forest, hugel beds, and all growing systems'
+    },
+    forest: {
+      icon: '🌳', title: 'Food Forest', sub: '8-layer polyculture guild · self-sustaining · no external inputs needed',
+      body: 'The food forest is planted along the wash corridor first, where water concentrates. Eight layers of plants chosen specifically for Zone 6b/7a high desert Arizona — every species selected because it produces food, medicine, or materials AND builds soil AND tolerates cold winters and hot dry summers without supplemental irrigation once established. This is the long-term caloric foundation of the community.',
+      cols: [
+        { head: 'Staple Calories', items: ['Hopi blue corn (heritage, dry-adapted)', 'Tepary bean — driest legume on Earth, bred for AZ desert', 'Acorn squash + Delicata', 'Jerusalem artichoke — calorie-dense, spreads freely', 'Arizona walnut — high-fat nut, native', 'Gambel oak acorns — dried, ground for flour'] },
+        { head: 'Vegetables', items: ['Hopi amaranth — greens + grain (18% protein)', 'Swiss chard — cold-hardy, year-round', 'Kale — grows through winter at this elevation', 'Garlic — planted fall, harvested June', 'Onion families — multiplier onions self-perpetuate', 'Comfrey — edible greens + mineral accumulator', 'Lamb\'s quarters — wild, nutritious, self-seeding'] },
+        { head: 'Fruit', items: ['Serviceberry (Amelanchier) — high calorie native berry', 'Native Arizona wolfberry/goji (Lycium pallidum)', 'Gooseberry + currant — Zone 4 hardy', 'Desert willow (medicinal + edible seeds)', 'Apache plum', 'Native strawberry (Fragaria vesca) ground cover', 'Fig — produces two crops/year in limestone soil'] },
+        { head: 'Grain + Fiber', items: ['Hopi sunflower — oil + seeds + stalks', 'Hopi blue corn — grits, masa, cornmeal, polenta', 'Amaranth grain — gluten-free, complete protein', 'Hemp (if AZ licensing allows) — seed, fiber, oil', 'Wheat: Sonora White heritage — low water need', 'Quinoa — high altitude crop, thrives at 5600 ft'] },
+        { head: 'Medicine + Utility', items: ['Mullein — grows wild, free, respiratory medicine', 'Yarrow — wound herb, self-seeding', 'Echinacea — immune support', 'Lavender — culinary, medicinal, drying income', 'Sage (native) — antiseptic, flavoring', 'Juniper (existing) — berries, wood, resin', 'Cattails (pond edge) — flour from pollen, edible shoots, weaving'] },
+        { head: 'Nitrogen Fixers', items: ['Tepary bean (field)', 'White clover (ground cover everywhere)', 'Desert willow (sub-canopy)', 'Amorpha fruticosa (false indigo)', 'Russian olive along wash (controversial but productive)', 'Four-wing saltbush — native, drought-proof'] }
+      ],
+      flow: '→ Harvests feed kitchen · Waste, prunings, and trimmings feed goats and compost'
+    },
+    kitchen: {
+      icon: '🔥', title: 'Communal Kitchen', sub: 'Juniper · stone · clay · the social heart of the property',
+      body: 'Not just a cooking space. The communal kitchen is where the food system concentrates and where the community gathers. Large enough for cheesemaking, fermentation, preservation, and feeding 20+ people. Built from the land itself: juniper timber frame, adobe walls, wood-fired clay oven, ironwork from the forge. Arizona Cottage Food certified for direct cheese and value-added product sales.',
+      cols: [
+        { head: 'Preservation Methods', items: ['Lacto-fermentation: kraut, kimchi, garlic, hot sauce', 'Cheese aging (cool storage in dome lower level)', 'Solar drying: herbs, mushrooms, fruit, jerky', 'Lard and tallow rendering from goats', 'Seed saving: clay pot sealed with beeswax', 'Alcohol fermentation: wine, kvass, vinegar'] },
+        { head: 'Production', items: ['Artisan cheese from 400 goats', 'Mushroom powder from tunnel surplus', 'Herb bundles: lavender, sage, oregano, thyme', 'Honey extraction and beeswax processing', 'Preserved foods for winter months', 'Value-added products for farmers market'] },
+        { head: 'Zero Waste', items: ['Whey from cheesemaking → goat/pig feed', 'Vegetable scraps → compost', 'Bone broth → stock, calcium supplement', 'Cooking oil → soap with lye (wood ash)', 'Ash from wood fire → lye, soil amendment', 'Everything has a second use before composting'] }
+      ],
+      flow: '→ Waste streams back to compost and animals · Surplus to market revenue'
+    },
+    aqua: {
+      icon: '🐟', title: 'Aquaponics + Pond', sub: 'Fish · floating gardens · chinampa rafts · no plastic pipes',
+      body: 'The main pond is the water system\'s heart. Aquaponics runs inside the dome (fish tanks visible through floor panels). The pond integrates floating chinampa garden rafts — 2 to 5 edge-based peninsula beds growing moisture-tolerant crops. The whole system is designed around the reality of high-desert water: it rises after monsoon rain and drops in dry months. Every element adjusts with the water level.',
+      cols: [
+        { head: 'Fish (Dome Tanks)', items: ['Tilapia — tolerates cool water at 5600 ft', 'Bluegill — cold-hardier alternative', 'Fish waste feeds kitchen herb growbeds above', 'Plants filter water back to fish tanks', 'One 200-gallon tank to start, scale up'] },
+        { head: 'Chinampa Crops', items: ['Watercress — extremely nutritious, loves wet feet', 'Mint — contained on rafts (or it takes over)', 'Swiss chard + kale', 'Cattails — edible shoots, pollen flour, weaving material', 'Duck potato (Sagittaria) — edible tubers', 'Duckweed — 40% protein, feeds poultry directly'] },
+        { head: 'Pond Ecology', items: ['Floating gardens shade water → less evaporation', 'Fish waste → plant nutrition → cleaner water', 'Ducks and geese patrol the perimeter', 'Biochar charged in pond water, then applied to soil', 'Crescent pools above feed main pond by overflow', 'Native willow and cottonwood roots stabilize edges'] }
+      ],
+      flow: '→ Clean water recirculates to fish · Duckweed and raft harvests feed poultry and goats'
+    },
+    greenhouse: {
+      icon: '🏡', title: 'Greenhouse + Hydroponics', sub: 'Year-round production · microgreens · herbs · extends short AZ season',
+      body: 'The greenhouse extends Snowflake\'s growing season — winters are cold at 5,600 ft and the frost-free window is shorter than most people expect. South-facing passive solar. Vertical hydroponic towers for microgreens and herbs run on a 14-day harvest cycle. The connected dome greenhouse serves the double function of solar heat battery in winter and graywater biofilter year-round.',
+      cols: [
+        { head: 'Year-Round Crops', items: ['Microgreens (14-day cycle): sunflower, pea, radish, broccoli', 'Culinary herbs: basil, cilantro, parsley, dill', 'Perennial herbs: rosemary, thyme, oregano, lavender', 'Salad greens: arugula, spinach, mâche', 'Sprouts: alfalfa, lentil, mung bean, fenugreek'] },
+        { head: 'Extended Season', items: ['Dwarf citrus in pots (Meyer lemon, kumquat)', 'Cherry tomatoes October–April', 'Cucumbers + peppers with season extension', 'Figs (overwintered in pots)', 'Berries: strawberry, alpine strawberry year-round', 'Ginger + turmeric in large containers'] },
+        { head: 'Revenue', items: ['Microgreens to restaurants: $25–40/lb', 'Herb bundles for farmers market', 'Edible flower garnishes (premium pricing)', 'Transplant starts for food forest expansion', 'Culinary mushroom cultivation in shaded zone', '$8–15k annually from greenhouse alone'] }
+      ],
+      flow: '→ Graywater from dome flows into greenhouse beds → Purified overflow to orchard swales'
+    },
+    mushrooms: {
+      icon: '🍄', title: 'Mushroom Tunnel', sub: 'Below-grade · 55–60°F year-round · fungal composting hub adjacent',
+      body: 'Excavated into a slope or below grade — the earth itself provides insulation. No power needed to maintain growing temperatures. The tunnel produces culinary mushrooms year-round while the adjacent fungal composting hub processes all organic waste faster and richer than conventional composting. Spent substrate feeds the goats and chickens.',
+      cols: [
+        { head: 'Varieties Grown', items: ['Oyster (Pleurotus ostreatus) — fastest, most productive', 'Lion\'s mane — medicinal, high value, $20–35/lb', 'Shiitake — reliable, restaurant demand', 'Reishi — medicinal, drying and tincture', 'Wine cap (Stropharia) — outdoor beds along paths', 'King oyster — long shelf life, great for drying'] },
+        { head: 'Revenue', items: ['Restaurant accounts: $13–18/lb fresh', 'Farmers market: $15–25/lb', 'Mushroom powder (dehydrated): $30–60/lb', 'Medicinal tinctures (lion\'s mane, reishi)', '$13k Year 1 · $48k+ Year 3', 'Spawn sales to other growers'] },
+        { head: 'System Integration', items: ['Spent substrate → goat and chicken feed', 'Mycelium enriches compost hub', 'Inoculate hugelkultur beds with wine cap', 'Biochar from kiln inoculated with mycelium', 'Mushroom growing uses only wood waste, no purchased substrate from Year 2'] }
+      ],
+      flow: '→ Spent substrate feeds goats + compost hub · Mycelium inoculates soil systems'
+    },
+    apiary: {
+      icon: '🐝', title: 'Apiary', sub: '2–4 hives · high desert wildflower + juniper honey · beeswax for everything',
+      body: 'Bees do work in every system on the property simultaneously: pollinating the food forest, the greenhouse, the pond edge plants, and the vineyard. High-desert honey from juniper and native wildflower has a distinctive flavor profile that commands premium prices. Beeswax replaces petroleum-based products: wood finish, candles, seed storage vessels, lip balm, furniture polish.',
+      cols: [
+        { head: 'Pollination Services', items: ['Food forest: fruit set for serviceberry, currant, apple', 'Greenhouse: tomatoes, peppers, cucumbers', 'Vineyard: native grape pollination', 'Pond edge: flowering herbs and wildflowers', 'All garden zones benefit simultaneously'] },
+        { head: 'Products', items: ['Wildflower + juniper honey $15–30/lb', 'Beeswax wood finish (replaces petroleum)', 'Candles from beeswax', 'Seed storage: beeswax-sealed clay pots', 'Lip balm, salve, soap additive', 'Beeswax polish for pottery and ironwork'] },
+        { head: 'System Value', items: ['Increases food forest yield 20–30% through pollination', 'Zero input cost after hive purchase', 'Propolis: antimicrobial, wound treatment', 'Dead bees → high-nitrogen compost input', '$2–4k Year 1 revenue · $6–10k Year 3'] }
+      ],
+      flow: '→ Pollinates all flowering systems · Beeswax closes the seed storage loop'
+    }
+  };
+
+  document.querySelectorAll('.loop-node').forEach(node => {
+    node.addEventListener('click', function() {
+      const key = this.getAttribute('data-node');
+      const d = nodeData[key];
+      if (!d) return;
+
+      // Highlight active node
+      document.querySelectorAll('.loop-node').forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+
+      const panel = document.getElementById('node-panel');
+      document.getElementById('np-icon').textContent = d.icon;
+      document.getElementById('np-title').textContent = d.title;
+      document.getElementById('np-sub').textContent = d.sub;
+      document.getElementById('np-body').textContent = d.body;
+      document.getElementById('np-flow').textContent = d.flow;
+
+      const grid = document.getElementById('np-grid');
+      grid.innerHTML = d.cols.map(col => `
+        <div class="np-col">
+          <h4>${col.head}</h4>
+          <ul>${col.items.map(i => `<li>${i}</li>`).join('')}</ul>
+        </div>
+      `).join('');
+
+      panel.classList.add('visible');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    node.addEventListener('mouseenter', function() { this.style.opacity = '0.75'; });
+    node.addEventListener('mouseleave', function() { this.style.opacity = '1'; });
+  });
+  </script>
+</section>
+
+<div class="divider"></div>
+
+<!-- BURIED + FLOATING CONTRAST -->
+<section>
+  <div class="section-label">Architecture</div>
+  <h2>Buried & Floating</h2>
+  <p style="color:rgba(242,234,216,0.6);max-width:700px;margin-bottom:0.5rem;">
+    The design identity of Snowflake Sanctuary is built on contrast: structures that go deep into the earth and structures that rise above it. Ancient forms and futuristic ones. The tension between them is the story.
+  </p>
+  <div class="contrast-grid">
+    <div class="contrast-card contrast-buried">
+      <h3>↓ Buried</h3>
+      <p style="font-size:0.85rem;color:rgba(242,234,216,0.5);margin-bottom:1rem;">Earth-sheltered, thermally stable, ancient form</p>
+      <ul class="contrast-list">
+        <li>Earth dome / hobbit hole · 800 SF · 32 ft diameter</li>
+        <li>Hobbit door entry · loft mezzanine overlooks interior</li>
+        <li>Mushroom tunnel below grade</li>
+        <li>Fungal composting hub adjacent</li>
+        <li>Root cellar / cool storage</li>
+        <li>55–65°F year-round without mechanical heating</li>
+        <li>Adobe, earthbag, rammed earth, cob</li>
+        <li>Aquaponics tanks in lower dome level</li>
+      </ul>
+    </div>
+    <div class="contrast-card contrast-floating">
+      <h3>↑ Floating</h3>
+      <p style="font-size:0.85rem;color:rgba(242,234,216,0.5);margin-bottom:1rem;">Elevated, lightweight, futuristic form</p>
+      <ul class="contrast-list">
+        <li>Floating platforms over crescent pools</li>
+        <li>Treehouse along the wash corridor</li>
+        <li>2 elevated sleeping pods · off-ground posts</li>
+        <li>Suspended bridge between elevated points</li>
+        <li>Chinampa-style floating garden rafts</li>
+        <li>Geoship geodesic ceramic domes (residents)</li>
+        <li>Seasonal meditation platform on main pond</li>
+        <li>Central station · elevated deck for green screen</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NAVIGATION CARDS -->
+<section>
+  <div class="section-label">Explore</div>
+  <h2>The Full Blueprint</h2>
+  <p style="color:rgba(242,234,216,0.6);max-width:700px;">
+    Each section below opens a detailed view of one dimension of Snowflake Sanctuary. Start anywhere.
+  </p>
+  <div class="nav-cards">
+    <a href="dome.html" class="nav-card">
+      <span class="nc-icon">🏠</span>
+      <span class="nc-title">The Earth Dome</span>
+      <p class="nc-desc">Hobbit-door entry, loft mezzanine, buried 800 SF living space, aquaponics, graywater loop, rocket mass heater.</p>
+    </a>
+    <a href="map.html" class="nav-card">
+      <span class="nc-icon">🗺</span>
+      <span class="nc-title">Property Map</span>
+      <p class="nc-desc">Interactive 40-acre site map. Swales, ponds, food forest, structures, RV spots, cistern nodes, floating platforms.</p>
+    </a>
+    <a href="geoships.html" class="nav-card">
+      <span class="nc-icon">⬡</span>
+      <span class="nc-title">Resident Homes</span>
+      <p class="nc-desc">Geoship geodesic homes for permanent residents. Individual private areas. Customized by each member.</p>
+    </a>
+    <a href="constitution.html" class="nav-card">
+      <span class="nc-icon">📜</span>
+      <span class="nc-title">The Covenant</span>
+      <p class="nc-desc">Community constitution. Governance, membership, land use, labor, commons, and the founding agreement.</p>
+    </a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TIMELINE -->
+<section>
+  <div class="section-label">Build Sequence</div>
+  <h2>Timeline & Costs</h2>
+  <p style="color:rgba(242,234,216,0.6);max-width:700px;margin-bottom:2.5rem;">
+    All costs reflect DIY construction, barter, WWOOF labor, and on-site materials (juniper, clay, stone). Cash outlay is hardware, roofing, fixtures, and permits only.
+  </p>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Before Day 1</div>
+      <div class="tl-title">Legal Foundation + Water Rights</div>
+      <div class="tl-items">
+        John/Lindsay agreement drafted by Arizona attorney · ADWR water rights consultation · 
+        site survey + topo map · WWOOF USA membership · EQIP pre-application
+      </div>
+      <span class="tl-cost">$1,500–$3,000 attorney · $0 ADWR</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--clay-light)"></div>
+      <div class="tl-phase">Week 1–3</div>
+      <div class="tl-title">WWOOF Housing + Paddock Fencing</div>
+      <div class="tl-items">
+        School bus acquired + converted (cots, wood stove, outdoor shower) · listed on WWOOF USA · 
+        paddock fencing juniper posts + wire · first WWOOFers arrive Week 4–6
+      </div>
+      <span class="tl-cost">$3,000–$7,000 total</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--sage-light)"></div>
+      <div class="tl-phase">Month 1–2</div>
+      <div class="tl-title">Water Harvesting + Mule + Communal Kitchen</div>
+      <div class="tl-items">
+        Swales + crescent pools along wash corridor · mule acquired · run-in shed built from juniper · 
+        communal kitchen: adobe + stone + juniper timber · wood-fired oven · cheesemaking sink · fermentation alcove
+      </div>
+      <span class="tl-cost">$5,000–$12,000 · mostly materials + WWOOF labor</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--ochre)"></div>
+      <div class="tl-phase">Month 2–5</div>
+      <div class="tl-title">Earth Dome Phase 1 + Central Station</div>
+      <div class="tl-items">
+        Dome site selected at higher elevation · earthbag shell + airform · buried under composted soil · 
+        hobbit door + loft entry · aquaponics roughed in · 
+        John's central station: solar array, cistern, charging, wifi, green screen deck
+      </div>
+      <span class="tl-cost">$38,000–$50,000 · primary use of John's $45k investment</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--sky-light)"></div>
+      <div class="tl-phase">Month 3–6</div>
+      <div class="tl-title">Mushroom Tunnel + Greenhouse + Apiary + Drying Shed</div>
+      <div class="tl-items">
+        Below-grade mushroom tunnel excavated + fungal composting hub adjacent · 
+        greenhouse kit (EQIP up to 50% offset) + vertical hydroponics · 
+        2–4 beehives · drying shed for herbs + seeds
+      </div>
+      <span class="tl-cost">$15,000–$28,000 · EQIP reduces greenhouse cost 50%</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--sky)"></div>
+      <div class="tl-phase">Month 4–8</div>
+      <div class="tl-title">Floating Structures + Ponds + Chinampa Rafts</div>
+      <div class="tl-items">
+        Main pond excavated · 2–5 chinampa-style floating garden rafts (reed + brush + compost) · 
+        floating meditation platform · anchored with vertical poles for water level fluctuation · 
+        duck/goose house + rabbit hutches
+      </div>
+      <span class="tl-cost">$3,000–$8,000</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--clay-light)"></div>
+      <div class="tl-phase">Month 6–10</div>
+      <div class="tl-title">Art Studio + Maintenance Shop + Elevated Structures</div>
+      <div class="tl-items">
+        Art studio: adobe + juniper + north skylight · maintenance shop + forge + blacksmithing · 
+        treehouse along wash · 2 elevated sleeping pods for HipCamp premium listings · 
+        suspended walkway connection
+      </div>
+      <span class="tl-cost">$8,000–$18,000</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--sage)"></div>
+      <div class="tl-phase">Month 8–14</div>
+      <div class="tl-title">Pottery Studio + Grape Canopy + Hugelkultur</div>
+      <div class="tl-items">
+        Pottery studio under Vitis arizonica (native grape) canopy on juniper pergola · 
+        pit kiln Year 1 ($0) → brick downdraft Year 2 · 
+        hugelkultur beds along wash with buried juniper biomass · 
+        food forest planted: canopy + shrub + herbaceous layers
+      </div>
+      <span class="tl-cost">$2,000–$5,000</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--ochre-pale)"></div>
+      <div class="tl-phase">Year 2–3</div>
+      <div class="tl-title">Winery + First Resident Geoships + Speaking Tour</div>
+      <div class="tl-items">
+        Native Vitis arizonica vineyard established · TTB federal permit application · 
+        first permanent residents invited · Geoship domes custom-ordered per resident · 
+        first speaking engagement · app prototype · second Geoship possible
+      </div>
+      <span class="tl-cost">Year 2 revenue funds Year 2 builds</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--sage-light)"></div>
+      <div class="tl-phase">Year 5–7</div>
+      <div class="tl-title">Closed Loop Achieved</div>
+      <div class="tl-items">
+        Food forest mature · community self-sustaining · external revenue optional · 
+        teaching model documented and exported · north or south 40 acres acquisition possible
+      </div>
+      <span class="tl-cost">External income optional from this point</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- REVENUE TABLE -->
+<section>
+  <div class="section-label">Financial Path</div>
+  <h2>Revenue → Closed Loop</h2>
+  <p style="color:rgba(242,234,216,0.6);max-width:700px;margin-bottom:0.5rem;">
+    External revenue funds the build. The build eliminates the need for external revenue. This is the sequence, not the destination.
+  </p>
+  <table class="rev-table">
+    <thead>
+      <tr>
+        <th>Revenue Stream</th>
+        <th>Year 1</th>
+        <th>Year 3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Goat dairy + cheese (community share)</td><td class="yr1">$18–28k</td><td class="yr3">$35–55k</td></tr>
+      <tr><td>Goat land-clearing rental</td><td class="yr1">$8–16k</td><td class="yr3">$18–30k</td></tr>
+      <tr><td>Culinary mushrooms</td><td class="yr1">$13k</td><td class="yr3">$48–73k</td></tr>
+      <tr><td>HipCamp + retreat guests</td><td class="yr1">$12–20k</td><td class="yr3">$35–55k</td></tr>
+      <tr><td>Microgreens + herbs + cut flowers</td><td class="yr1">$8–12k</td><td class="yr3">$18–28k</td></tr>
+      <tr><td>Artist residencies (structured cohorts)</td><td class="yr1">—</td><td class="yr3">$18–30k</td></tr>
+      <tr><td>Honey + beeswax products</td><td class="yr1">$2–4k</td><td class="yr3">$6–10k</td></tr>
+      <tr><td>Grants (EQIP, REAP, VAPG, SARE)</td><td class="yr1">$25–50k</td><td class="yr3">$35–65k</td></tr>
+      <tr><td>Pottery + art workshops</td><td class="yr1">—</td><td class="yr3">$14–28k</td></tr>
+      <tr><td>Teaching + speaking tours</td><td class="yr1">—</td><td class="yr3">$10–25k</td></tr>
+      <tr><td>Winery (Year 3+)</td><td class="yr1">—</td><td class="yr3">$8–18k</td></tr>
+      <tr><td><strong>TOTAL</strong></td><td><strong>~$86–130k</strong></td><td><strong>~$245–417k</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="divider"></div>
+
+<!-- JOHN'S CENTRAL STATION -->
+<section>
+  <div class="section-label">Infrastructure Hub</div>
+  <h2>John's Central Station</h2>
+  <p style="color:rgba(242,234,216,0.6);max-width:700px;margin-bottom:1.5rem;">
+    The operational and digital hub of the property. Every other structure radiates from it. Built to support both the land operation and John's business infrastructure.
+  </p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+    <div style="background:rgba(30,18,8,0.7);border:1px solid rgba(200,151,58,0.15);border-radius:8px;padding:1.5rem;">
+      <div style="font-size:1.5rem;margin-bottom:0.75rem">⚡</div>
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--ochre-pale);margin-bottom:0.5rem;">Power + Water</div>
+      <p style="font-size:0.85rem;color:rgba(242,234,216,0.55);">4–6 kW solar array · battery bank · EV + device charging · cistern fed by roof catchment · distribution to all RV hookup nodes</p>
+    </div>
+    <div style="background:rgba(30,18,8,0.7);border:1px solid rgba(200,151,58,0.15);border-radius:8px;padding:1.5rem;">
+      <div style="font-size:1.5rem;margin-bottom:0.75rem">📡</div>
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--ochre-pale);margin-bottom:0.5rem;">Connectivity</div>
+      <p style="font-size:0.85rem;color:rgba(242,234,216,0.55);">Starlink or LTE router · wifi coverage for work areas · mesh nodes to key structures · enough bandwidth for video production</p>
+    </div>
+    <div style="background:rgba(30,18,8,0.7);border:1px solid rgba(200,151,58,0.15);border-radius:8px;padding:1.5rem;">
+      <div style="font-size:1.5rem;margin-bottom:0.75rem">🎬</div>
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--ochre-pale);margin-bottom:0.5rem;">Green Screen Studio</div>
+      <p style="font-size:0.85rem;color:rgba(242,234,216,0.55);">Covered elevated deck · north-facing for even light · green screen wall + lighting rig · for medical imaging company content + teaching videos</p>
+    </div>
+    <div style="background:rgba(30,18,8,0.7);border:1px solid rgba(200,151,58,0.15);border-radius:8px;padding:1.5rem;">
+      <div style="font-size:1.5rem;margin-bottom:0.75rem">📱</div>
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--ochre-pale);margin-bottom:0.5rem;">Medical Imaging App</div>
+      <p style="font-size:0.85rem;color:rgba(242,234,216,0.55);">Pet health imaging for raw food companies like SFRaw · fewer vet visits · at-home health tracking · passive income model on 10+ yr established business</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  SNOWFLAKE SANCTUARY · SNOWFLAKE, ARIZONA · REGENERATIVE LAND LAB & INTENTIONAL COMMUNITY
+  <br><br>
+  Creativity · Growth · Land Stewardship · Beauty · Responsibility
+</footer>
+
+</body>
+</html>

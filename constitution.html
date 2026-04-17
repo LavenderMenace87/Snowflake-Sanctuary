@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Covenant — Snowflake Sanctuary</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --earth:#100a05;--clay:#8B3A1C;--clay-light:#b85a35;
+  --ochre:#C8973A;--ochre-pale:#e8c87a;--bone:#F2EAD8;
+  --sage:#4a6b2e;--sage-light:#6a9045;--sky:#4A7A9B;
+  --sand:#c4a87a;--rust:#9B3E1C;--juniper:#2D4A1E;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--earth);color:var(--bone);font-family:'Crimson Text',Georgia,serif;font-size:18px;line-height:1.75;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.4;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(16,10,5,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(200,151,58,0.2);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;}
+.nav-logo{font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.15em;color:var(--ochre);text-decoration:none;}
+.nav-links{display:flex;gap:0.25rem;}
+.nav-links a{padding:0.35rem 0.75rem;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.12em;color:rgba(242,234,216,0.6);text-decoration:none;border:1px solid transparent;border-radius:2px;transition:all 0.2s;text-transform:uppercase;}
+.nav-links a:hover,.nav-links a.active{color:var(--ochre);border-color:rgba(200,151,58,0.3);background:rgba(200,151,58,0.08);}
+
+.preamble-hero{
+  min-height:60vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:6rem 2rem 4rem;
+  background:radial-gradient(ellipse at center,rgba(139,58,28,0.1) 0%,transparent 70%);
+}
+.preamble-title{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,4rem);font-weight:900;color:var(--bone);margin-bottom:0.75rem;}
+.preamble-sub{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.3em;color:var(--ochre);text-transform:uppercase;margin-bottom:2rem;}
+.preamble-date{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(200,151,58,0.4);font-style:italic;}
+.preamble-text{max-width:700px;margin:2rem auto 0;font-size:1rem;color:rgba(242,234,216,0.7);line-height:1.9;font-style:italic;}
+
+/* LAYOUT: sidebar + content */
+.doc-layout{display:grid;grid-template-columns:240px 1fr;gap:0;max-width:1100px;margin:0 auto;padding:0 2rem;}
+.doc-sidebar{
+  position:sticky;top:60px;align-self:start;
+  padding:2rem 0;
+}
+.sidebar-label{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.3em;color:rgba(200,151,58,0.4);text-transform:uppercase;padding:0.5rem 1rem;margin-bottom:0.5rem;}
+.sidebar-item{
+  display:block;padding:0.35rem 1rem;
+  font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.05em;
+  color:rgba(242,234,216,0.45);text-decoration:none;
+  border-left:2px solid transparent;transition:all 0.15s;
+}
+.sidebar-item:hover,.sidebar-item.active{
+  color:var(--ochre-pale);border-left-color:var(--ochre);
+  background:rgba(200,151,58,0.05);
+}
+
+.doc-content{padding:3rem 0 3rem 3rem;border-left:1px solid rgba(200,151,58,0.08);}
+
+/* ARTICLE */
+.article{
+  margin-bottom:4rem;
+  scroll-margin-top:80px;
+}
+.article-num{
+  font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.3em;
+  color:var(--ochre);text-transform:uppercase;margin-bottom:0.5rem;
+}
+.article-title{
+  font-family:'Cinzel',serif;font-size:1.5rem;color:var(--bone);
+  margin-bottom:1.5rem;padding-bottom:0.75rem;
+  border-bottom:1px solid rgba(200,151,58,0.15);
+}
+.provision{
+  display:grid;grid-template-columns:44px 1fr;gap:0.75rem;
+  margin-bottom:0.9rem;align-items:start;
+}
+.prov-num{
+  font-family:'Cinzel',serif;font-size:0.75rem;color:rgba(200,151,58,0.4);
+  padding-top:0.2rem;font-weight:600;letter-spacing:0.05em;
+}
+.prov-text{font-size:0.95rem;color:rgba(242,234,216,0.72);line-height:1.75;}
+.prov-text strong{color:var(--ochre-pale);}
+
+/* SPECIAL CALLOUTS */
+.article-callout{
+  background:rgba(200,151,58,0.05);
+  border:1px solid rgba(200,151,58,0.15);
+  border-left:3px solid var(--ochre);
+  border-radius:0 6px 6px 0;
+  padding:1.25rem 1.5rem;
+  margin:1.5rem 0;
+  font-size:0.9rem;
+  color:rgba(242,234,216,0.7);
+  font-style:italic;
+}
+
+.signature-block{
+  margin-top:5rem;padding:3rem;
+  background:rgba(30,18,8,0.6);
+  border:1px solid rgba(200,151,58,0.12);
+  border-radius:8px;
+  text-align:center;
+}
+.sig-title{font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.2em;color:var(--ochre);text-transform:uppercase;margin-bottom:2rem;}
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:1rem;}
+.sig-name{font-family:'Cinzel',serif;font-size:1rem;color:var(--bone);margin-bottom:0.25rem;}
+.sig-role{font-size:0.8rem;color:rgba(242,234,216,0.4);font-style:italic;}
+.sig-line{border-top:1px solid rgba(200,151,58,0.25);margin-top:1.5rem;padding-top:0.75rem;}
+
+.divider{width:100%;height:1px;background:linear-gradient(to right,transparent,rgba(200,151,58,0.3),transparent);margin:0;}
+
+footer{border-top:1px solid rgba(200,151,58,0.1);padding:3rem 2rem;text-align:center;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.2em;color:rgba(242,234,216,0.25);}
+
+@media(max-width:768px){
+  .doc-layout{grid-template-columns:1fr;}
+  .doc-sidebar{display:none;}
+  .doc-content{padding:2rem 0;border-left:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">✦ Snowflake Sanctuary</a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="dome.html">Dome</a>
+    <a href="geoships.html">Residents</a>
+    <a href="map.html">Map</a>
+    <a href="constitution.html" class="active">Covenant</a>
+  </div>
+</nav>
+
+<div class="preamble-hero">
+  <div class="preamble-sub">Community Governing Document</div>
+  <h1 class="preamble-title">The Covenant</h1>
+  <div class="preamble-date">Snowflake Sanctuary Community Constitution · Adopted 2026</div>
+  <div class="preamble-text">
+    <strong>WHEREAS</strong>, we, the Founders and Members of Snowflake Sanctuary, recognize that land is held in stewardship rather than dominion, and that a community flourishes through shared purpose, honest labor, beauty, responsibility, and regeneration;<br><br>
+    <strong>WHEREAS</strong>, Snowflake Sanctuary exists as a regenerative land lab, intentional community, and place of learning, creation, and mutual aid rooted in the high desert of Snowflake, Arizona;<br><br>
+    <strong>NOW, THEREFORE</strong>, we do hereby establish this Constitution as the governing charter of Snowflake Sanctuary.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="doc-layout">
+  <!-- SIDEBAR -->
+  <nav class="doc-sidebar" aria-label="Articles">
+    <div class="sidebar-label">Articles</div>
+    <a href="#art1" class="sidebar-item">I. Identity & Purpose</a>
+    <a href="#art2" class="sidebar-item">II. Founding Principles</a>
+    <a href="#art3" class="sidebar-item">III. The Land</a>
+    <a href="#art4" class="sidebar-item">IV. Membership</a>
+    <a href="#art5" class="sidebar-item">V. Governance</a>
+    <a href="#art6" class="sidebar-item">VI. The Founders</a>
+    <a href="#art7" class="sidebar-item">VII. Land Use</a>
+    <a href="#art8" class="sidebar-item">VIII. Housing</a>
+    <a href="#art9" class="sidebar-item">IX. Work & Contribution</a>
+    <a href="#art10" class="sidebar-item">X. Commons & Revenue</a>
+    <a href="#art11" class="sidebar-item">XI. Additional Articles</a>
+    <a href="#signatures" class="sidebar-item">Signatures</a>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="doc-content">
+
+    <div class="article" id="art1">
+      <div class="article-num">Article I</div>
+      <div class="article-title">Identity and Purpose</div>
+      <div class="provision"><span class="prov-num">1.1</span><span class="prov-text">Snowflake Sanctuary is a private intentional community organized for <strong>regenerative living, ecological stewardship, creative work, education, practical self-reliance, and mutually beneficial community life.</strong></span></div>
+      <div class="provision"><span class="prov-num">1.2</span><span class="prov-text">The purpose of the Community is to build and sustain a place where people may live, work, create, and learn in a manner consistent with the long-term flourishing of the land and the people responsible for it.</span></div>
+      <div class="provision"><span class="prov-num">1.3</span><span class="prov-text">The Community shall prioritize <strong>closed-loop systems, soil building, water harvesting, humane food production, beauty in design,</strong> and durable structures and practices that strengthen the land rather than deplete it.</span></div>
+      <div class="provision"><span class="prov-num">1.4</span><span class="prov-text">No interpretation of this Constitution shall permit extraction, neglect, or conduct materially inconsistent with the Community's regenerative purpose.</span></div>
+    </div>
+
+    <div class="article" id="art2">
+      <div class="article-num">Article II</div>
+      <div class="article-title">Founding Principles</div>
+      <div class="article-callout">The five values are not aspirational statements. They are the standard against which every decision, structure, and member is evaluated. The community has no interest in people who cannot live by them.</div>
+      <div class="provision"><span class="prov-num">2.1</span><span class="prov-text">The core values of Snowflake Sanctuary are <strong>Creativity, Growth, Land Stewardship, Beauty, and Responsibility.</strong></span></div>
+      <div class="provision"><span class="prov-num">2.2</span><span class="prov-text"><strong>Creativity</strong> means that members are expected to contribute imagination, problem-solving, and constructive making to the life of the Community.</span></div>
+      <div class="provision"><span class="prov-num">2.3</span><span class="prov-text"><strong>Growth</strong> means personal, ecological, relational, and communal development, with the understanding that stagnation is contrary to the Community's purpose.</span></div>
+      <div class="provision"><span class="prov-num">2.4</span><span class="prov-text"><strong>Land Stewardship</strong> means that the land shall be tended, protected, and improved, and that no member possesses the land in a manner inconsistent with stewardship.</span></div>
+      <div class="provision"><span class="prov-num">2.5</span><span class="prov-text"><strong>Beauty</strong> means that structures, systems, and common spaces shall be built and maintained with care, coherence, and respect for craft.</span></div>
+      <div class="provision"><span class="prov-num">2.6</span><span class="prov-text"><strong>Responsibility</strong> means that members shall honor their commitments to one another, to the land, and to the Community's shared agreements.</span></div>
+    </div>
+
+    <div class="article" id="art3">
+      <div class="article-num">Article III</div>
+      <div class="article-title">The Land</div>
+      <div class="provision"><span class="prov-num">3.1</span><span class="prov-text">Snowflake Sanctuary is situated upon approximately <strong>forty acres in Snowflake, Arizona</strong>, at roughly 5,600 feet above sea level, subject to the exact legal description in the applicable deed and related instruments.</span></div>
+      <div class="provision"><span class="prov-num">3.2</span><span class="prov-text">The Community recognizes the physical character of the land: red clay soil, juniper and piñon vegetation, a wash running through the property, existing solar and water infrastructure, and the constraints and opportunities of a high-desert climate.</span></div>
+      <div class="provision"><span class="prov-num">3.3</span><span class="prov-text">The <strong>wash corridor, water-harvesting features, and all related ecological systems</strong> shall be treated as essential commons and protected accordingly.</span></div>
+      <div class="provision"><span class="prov-num">3.4</span><span class="prov-text">Permanent improvements shall favor low-impact, regenerative, and locally appropriate methods — clay, stone, juniper, earthbag, adobe, cob. No harmful chemicals. No plastics where avoidable. No electricity dependency without redundancy built in.</span></div>
+      <div class="provision"><span class="prov-num">3.5</span><span class="prov-text">The Community shall comply with all applicable Arizona water laws, land-use laws, and permitting requirements before constructing ponds, swales, surface water features, or other regulated improvements.</span></div>
+    </div>
+
+    <div class="article" id="art4">
+      <div class="article-num">Article IV</div>
+      <div class="article-title">Membership</div>
+      <div class="provision"><span class="prov-num">4.1</span><span class="prov-text">Membership in Snowflake Sanctuary is a privilege conditioned on adherence to this Constitution, any lawful operating agreements, and the Community's core values.</span></div>
+      <div class="provision"><span class="prov-num">4.2</span><span class="prov-text">Membership classes: <strong>Founding Members, Permanent Residents, Long-Stay Members, Working Guests, Rotating Volunteers, and Retreat Guests.</strong></span></div>
+      <div class="provision"><span class="prov-num">4.3</span><span class="prov-text"><strong>Founding Members</strong> are those persons whose vision, labor, land contribution, capital contribution, or governance role gave rise to the Community.</span></div>
+      <div class="provision"><span class="prov-num">4.4</span><span class="prov-text"><strong>Permanent Residents</strong> are persons who commit to multi-year residence, substantial labor, and participation in governance and commons maintenance.</span></div>
+      <div class="provision"><span class="prov-num">4.5</span><span class="prov-text">Long-Stay Members, Working Guests, and Retreat Guests may be granted defined access, housing, labor, or hospitality rights by agreement, but shall not acquire governance rights except as expressly provided.</span></div>
+      <div class="provision"><span class="prov-num">4.6</span><span class="prov-text">No person shall be admitted or retained as a member unless reasonably capable of living in good faith with the Community's values and agreements.</span></div>
+    </div>
+
+    <div class="article" id="art5">
+      <div class="article-num">Article V</div>
+      <div class="article-title">Governance</div>
+      <div class="article-callout">The governing principle: decisions should be made as close as possible to the people most affected by them. Personal domain is sovereign. The commons are governed collectively. The distinction between these domains is explicit, not assumed.</div>
+      <div class="provision"><span class="prov-num">5.1</span><span class="prov-text">The Community shall be governed by the principle that <strong>decisions should be made as close as possible to the people most affected by them.</strong></span></div>
+      <div class="provision"><span class="prov-num">5.2</span><span class="prov-text">Matters affecting <strong>private structures, personal practice, and individual conduct</strong> shall ordinarily remain within the domain of the responsible person.</span></div>
+      <div class="provision"><span class="prov-num">5.3</span><span class="prov-text">Matters affecting <strong>commons property, shared infrastructure, water systems, the goat operation, shared kitchens, land-use corridors, community revenue, and common obligations</strong> shall be governed collectively by the voting members.</span></div>
+      <div class="provision"><span class="prov-num">5.4</span><span class="prov-text">The Community may establish working circles, stewardship teams, or committees for operations, maintenance, building, hospitality, agriculture, finance, and conflict resolution.</span></div>
+      <div class="provision"><span class="prov-num">5.5</span><span class="prov-text">No committee, steward, or founder shall exercise authority beyond the scope expressly granted by this Constitution or a written agreement adopted under it.</span></div>
+    </div>
+
+    <div class="article" id="art6">
+      <div class="article-num">Article VI</div>
+      <div class="article-title">The Founders</div>
+      <div class="provision"><span class="prov-num">6.1</span><span class="prov-text">The Founders of Snowflake Sanctuary are <strong>Lindsay and John</strong>, whose respective roles, capacities, contributions, and rights shall be defined by written agreement and incorporated into the governance structure of the Community.</span></div>
+      <div class="provision"><span class="prov-num">6.2</span><span class="prov-text">The Founders acknowledge that their respective contributions include land, labor, capital, planning, stewardship, operations, and community architecture, and that clarity regarding those contributions is essential to the stability of the Community.</span></div>
+      <div class="provision"><span class="prov-num">6.3</span><span class="prov-text">Before any permanent structure is erected or any long-term commitment undertaken, the Founders shall memorialize their rights and obligations in a <strong>written agreement reviewed for legal sufficiency by counsel licensed in Arizona.</strong></span></div>
+      <div class="provision"><span class="prov-num">6.4</span><span class="prov-text">The Founders may retain founding authority with respect to initial formation, but such authority shall be exercised consistently with the long-term interests of the Community and shall be subject to the review and sunset provisions of this Constitution.</span></div>
+      <div class="provision"><span class="prov-num">6.5</span><span class="prov-text">The land is presently owned by <strong>John and his son</strong>, and any land-related agreements shall reflect their ownership rights and the Community's use rights.</span></div>
+      <div class="provision"><span class="prov-num">6.6</span><span class="prov-text">This Constitution is designed as a <strong>replicable social contract for intentional communities</strong>, with modular provisions that may be adapted for other properties and groups while preserving core principles of stewardship, responsibility, and regeneration.</span></div>
+    </div>
+
+    <div class="article" id="art7">
+      <div class="article-num">Article VII</div>
+      <div class="article-title">Land Use and Stewardship</div>
+      <div class="provision"><span class="prov-num">7.1</span><span class="prov-text">The land shall be used in a manner that <strong>increases fertility, conserves water, reduces fire risk, supports habitat,</strong> and improves the long-term productivity and beauty of the property.</span></div>
+      <div class="provision"><span class="prov-num">7.2</span><span class="prov-text">Members shall not engage in extractive use of soil, water, biomass, or infrastructure without corresponding replenishment or restorative practice.</span></div>
+      <div class="provision"><span class="prov-num">7.3</span><span class="prov-text">Trees, brush, forage, and natural materials may be used only in a manner consistent with sustainable management, ecological regeneration, and the Community's overall plan.</span></div>
+      <div class="provision"><span class="prov-num">7.4</span><span class="prov-text">Water-harvesting systems, food forest plantings, and agricultural improvements shall be designed with due regard to climate, rainfall, soil type, and legal restrictions.</span></div>
+      <div class="provision"><span class="prov-num">7.5</span><span class="prov-text">The Community may designate conservation zones, production zones, residence zones, hospitality zones, and work zones by written map or plan, which may be revised by Community vote.</span></div>
+    </div>
+
+    <div class="article" id="art8">
+      <div class="article-num">Article VIII</div>
+      <div class="article-title">Housing and Structures</div>
+      <div class="provision"><span class="prov-num">8.1</span><span class="prov-text">No permanent structure shall be built without prior approval under the Community's building and land-use process and without compliance with all applicable legal requirements.</span></div>
+      <div class="provision"><span class="prov-num">8.2</span><span class="prov-text">The Community shall favor structures that are <strong>durable, low-impact, beautiful, climate-appropriate, and capable of serving multiple functions.</strong> Materials preference: clay, stone, juniper, earthbag, adobe, cob, metal roofing.</span></div>
+      <div class="provision"><span class="prov-num">8.3</span><span class="prov-text">Temporary housing, volunteer housing, guest housing, and resident housing shall be assigned by agreement and may be conditioned on contribution, conduct, duration, and capacity.</span></div>
+      <div class="provision"><span class="prov-num">8.4</span><span class="prov-text">Any agreement concerning improvements funded or built by a member shall specify <strong>ownership, removal rights, reimbursement rights, and treatment upon departure or dissolution.</strong></span></div>
+      <div class="provision"><span class="prov-num">8.5</span><span class="prov-text">No member shall occupy or modify another's structure without permission, nor interfere with commons structures without authorization.</span></div>
+    </div>
+
+    <div class="article" id="art9">
+      <div class="article-num">Article IX</div>
+      <div class="article-title">Work and Contribution</div>
+      <div class="article-callout">This is not a passive residence. Membership carries obligations of labor, maintenance, and participation proportionate to role and capacity. The community is built by the people in it.</div>
+      <div class="provision"><span class="prov-num">9.1</span><span class="prov-text">The Community is not a passive residence; membership carries obligations of labor, maintenance, and participation proportionate to role and capacity.</span></div>
+      <div class="provision"><span class="prov-num">9.2</span><span class="prov-text">Each resident or long-stay member shall contribute work in a manner consistent with the needs of the Community: animal care, building, food production, cleaning, repair, hospitality, administration, or education.</span></div>
+      <div class="provision"><span class="prov-num">9.3</span><span class="prov-text">The Community may establish <strong>labor-credit, revenue-share, stipend, barter, or housing-for-work</strong> arrangements by written policy or individual agreement.</span></div>
+      <div class="provision"><span class="prov-num">9.4</span><span class="prov-text">Labor expectations for guests or volunteers shall be stated in advance and shall not be exceeded without consent.</span></div>
+      <div class="provision"><span class="prov-num">9.5</span><span class="prov-text">No person shall be compelled to perform labor beyond the scope of an agreed arrangement except as reasonably necessary in an emergency affecting life, health, or property.</span></div>
+    </div>
+
+    <div class="article" id="art10">
+      <div class="article-num">Article X</div>
+      <div class="article-title">Commons and Revenue</div>
+      <div class="provision"><span class="prov-num">10.1</span><span class="prov-text">The Community may own, operate, or manage commons assets, including kitchens, water systems, animal operations, workshops, gardens, roads, and shared tools.</span></div>
+      <div class="provision"><span class="prov-num">10.2</span><span class="prov-text">Any income derived from commons enterprises shall be accounted for transparently and used first for <strong>operating expenses, reserves, infrastructure replacement, debt service if any, and agreed distributions.</strong></span></div>
+      <div class="provision"><span class="prov-num">10.3</span><span class="prov-text">The goat operation, dairy production, cheesemaking, land-clearing services, hospitality, workshops, and related enterprises may be treated as Community economic activities if so designated by written agreement.</span></div>
+      <div class="provision"><span class="prov-num">10.4</span><span class="prov-text">Where labor entitles a person to compensation, profit share, or use rights, the applicable formula shall be stated in writing and administered in good faith.</span></div>
+      <div class="provision"><span class="prov-num">10.5</span><span class="prov-text">The Community shall maintain bookkeeping sufficient to show income, expenses, reserves, obligations, and distributions with reasonable clarity.</span></div>
+    </div>
+
+    <div class="article" id="art11">
+      <div class="article-num">Additional Articles</div>
+      <div class="article-title">Conflict, Review & Replication</div>
+      <div class="article-callout">The three structural principles derived from the We The People 2026 constitutional framework: regeneration not extraction (Art. 31), decisions closest to the people (Art. 34A), and living generation governance with annual review and sunset provisions (Art. 35).</div>
+      <div class="provision"><span class="prov-num">XI.1</span><span class="prov-text"><strong>Conflict Resolution.</strong> Disputes between members shall first be addressed directly. If unresolved, the matter goes to a circle of three community members — one chosen by each party, one chosen by both. The circle's recommendation is advisory but carries significant weight in community decisions.</span></div>
+      <div class="provision"><span class="prov-num">XI.2</span><span class="prov-text"><strong>Annual Review.</strong> Every January, the community gathers to reaffirm, revise, or sunset agreements. Rules that are not actively reaffirmed expire. The living community governs — not the founders' original vision frozen in clay.</span></div>
+      <div class="provision"><span class="prov-num">XI.3</span><span class="prov-text"><strong>Sunset Provisions.</strong> No provision of this Constitution shall govern without periodic reaffirmation. The community exists to serve its living members, not to preserve the preferences of its founders.</span></div>
+      <div class="provision"><span class="prov-num">XI.4</span><span class="prov-text"><strong>Regeneration Standard.</strong> Every practice, structure, and member is evaluated against a single question: does this intercept, convert, and return — or does it simply take? This is the operating principle of every ecosystem that has survived.</span></div>
+      <div class="provision"><span class="prov-num">XI.5</span><span class="prov-text"><strong>Replicable Model.</strong> This Constitution is designed to be adapted for other intentional communities. It is a case study and a template. The teaching mission of Snowflake Sanctuary includes documenting and sharing this governance architecture with communities that wish to build something similar.</span></div>
+    </div>
+
+    <div id="signatures" class="signature-block">
+      <div class="sig-title">Founders' Signatures</div>
+      <p style="font-size:0.85rem;color:rgba(242,234,216,0.45);margin-bottom:2rem;font-style:italic;">The following signatures confirm adoption of this Constitution and the obligation to govern the Community according to its terms.</p>
+      <div class="sig-grid">
+        <div>
+          <div class="sig-name">Lindsay</div>
+          <div class="sig-role">Founding Steward · Community Architecture</div>
+          <div class="sig-line">
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.15em;color:rgba(200,151,58,0.35);">SIGNATURE · DATE</div>
+          </div>
+        </div>
+        <div>
+          <div class="sig-name">John & Son</div>
+          <div class="sig-role">Landowners · Operations Partners</div>
+          <div class="sig-line">
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.15em;color:rgba(200,151,58,0.35);">SIGNATURE · DATE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end doc-content -->
+</div><!-- end doc-layout -->
+
+<div class="divider"></div>
+
+<footer>
+  SNOWFLAKE SANCTUARY · THE COVENANT · SNOWFLAKE, ARIZONA<br><br>
+  <a href="index.html" style="color:rgba(200,151,58,0.5);text-decoration:none;letter-spacing:0.15em;">← BACK TO OVERVIEW</a>
+</footer>
+
+<script>
+// Active sidebar on scroll
+const articles = document.querySelectorAll('.article, .signature-block');
+const sidebarLinks = document.querySelectorAll('.sidebar-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      sidebarLinks.forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === `#${id}`);
+      });
+    }
+  });
+}, { rootMargin: '-10% 0px -80% 0px' });
+articles.forEach(a => a.id && observer.observe(a));
+</script>
+</body>
+</html>

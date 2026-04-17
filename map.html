@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Map — Snowflake Sanctuary</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --earth:#100a05;--clay:#8B3A1C;--clay-light:#b85a35;
+  --ochre:#C8973A;--ochre-pale:#e8c87a;--bone:#F2EAD8;
+  --sage:#4a6b2e;--sage-light:#6a9045;--sky:#4A7A9B;--sky-light:#7aaec8;
+  --sand:#c4a87a;--rust:#9B3E1C;--juniper:#2D4A1E;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--earth);color:var(--bone);font-family:'Crimson Text',Georgia,serif;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.4;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(16,10,5,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(200,151,58,0.2);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;}
+.nav-logo{font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.15em;color:var(--ochre);text-decoration:none;}
+.nav-links{display:flex;gap:0.25rem;}
+.nav-links a{padding:0.35rem 0.75rem;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.12em;color:rgba(242,234,216,0.6);text-decoration:none;border:1px solid transparent;border-radius:2px;transition:all 0.2s;text-transform:uppercase;}
+.nav-links a:hover,.nav-links a.active{color:var(--ochre);border-color:rgba(200,151,58,0.3);background:rgba(200,151,58,0.08);}
+
+.page-hero{padding:6rem 2rem 2rem;text-align:center;}
+.page-eyebrow{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;color:var(--ochre);text-transform:uppercase;margin-bottom:0.75rem;}
+.page-title{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3.2rem);font-weight:900;color:var(--bone);margin-bottom:0.75rem;}
+.page-sub{font-size:1rem;color:var(--sand);font-style:italic;max-width:550px;margin:0 auto 1rem;}
+
+/* MAP CONTAINER */
+.map-wrap{
+  position:relative;
+  max-width:1100px;margin:2rem auto;padding:0 1rem;
+}
+.map-container{
+  position:relative;
+  background:rgba(20,12,5,0.95);
+  border:1px solid rgba(200,151,58,0.15);
+  border-radius:12px;
+  overflow:hidden;
+}
+#prop-map{
+  display:block;
+  width:100%;
+  cursor:crosshair;
+}
+/* ZONE TOGGLE CONTROLS */
+.map-controls{
+  display:flex;flex-wrap:wrap;gap:0.5rem;
+  padding:1rem;
+  background:rgba(16,10,5,0.8);
+  border-top:1px solid rgba(200,151,58,0.1);
+}
+.ctrl-btn{
+  padding:0.3rem 0.85rem;
+  font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.1em;
+  color:rgba(242,234,216,0.6);
+  background:rgba(30,18,8,0.7);
+  border:1px solid rgba(200,151,58,0.15);
+  border-radius:20px;cursor:pointer;transition:all 0.2s;
+}
+.ctrl-btn:hover,.ctrl-btn.active{color:var(--ochre-pale);border-color:rgba(200,151,58,0.4);background:rgba(200,151,58,0.08);}
+
+/* INFO PANEL */
+.info-panel{
+  position:absolute;top:1rem;right:1rem;
+  width:260px;
+  background:rgba(16,10,5,0.92);
+  border:1px solid rgba(200,151,58,0.2);
+  border-radius:8px;
+  padding:1.25rem;
+  pointer-events:none;
+  opacity:0;transition:opacity 0.25s;
+  backdrop-filter:blur(8px);
+}
+.info-panel.visible{opacity:1;}
+.ip-title{font-family:'Cinzel',serif;font-size:0.85rem;color:var(--ochre-pale);margin-bottom:0.5rem;}
+.ip-body{font-size:0.82rem;color:rgba(242,234,216,0.65);line-height:1.6;}
+.ip-cost{display:inline-block;margin-top:0.5rem;padding:0.15rem 0.6rem;border:1px solid rgba(200,151,58,0.25);border-radius:12px;font-family:'Cinzel',serif;font-size:0.6rem;color:var(--ochre-pale);}
+
+/* LEGEND */
+.legend{
+  padding:1rem 1.5rem;
+  background:rgba(16,10,5,0.6);
+  display:flex;flex-wrap:wrap;gap:1rem 2rem;
+}
+.legend-item{display:flex;align-items:center;gap:0.4rem;font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.08em;color:rgba(242,234,216,0.5);}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+footer{border-top:1px solid rgba(200,151,58,0.1);padding:3rem 2rem;text-align:center;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.2em;color:rgba(242,234,216,0.25);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">✦ Snowflake Sanctuary</a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="dome.html">Dome</a>
+    <a href="geoships.html">Residents</a>
+    <a href="map.html" class="active">Map</a>
+    <a href="constitution.html">Covenant</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Snowflake, AZ · 40 Acres · 5,600 ft</div>
+  <h1 class="page-title">Property Map</h1>
+  <p class="page-sub">Hover or click any structure or zone to see details. Toggle layers with the controls below the map.</p>
+</div>
+
+<div class="map-wrap">
+  <div class="map-container">
+    <div class="info-panel" id="infoPanel">
+      <div class="ip-title" id="ipTitle">Structure Name</div>
+      <div class="ip-body" id="ipBody">Details appear here.</div>
+      <span class="ip-cost" id="ipCost"></span>
+    </div>
+
+    <!-- THE MAP SVG -->
+    <svg id="prop-map" viewBox="0 0 900 720" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Ground texture -->
+        <pattern id="clayPat" patternUnits="userSpaceOnUse" width="12" height="12">
+          <rect width="12" height="12" fill="#2a1508"/>
+          <circle cx="6" cy="6" r="0.8" fill="rgba(160,80,30,0.2)"/>
+        </pattern>
+        <pattern id="junPat" patternUnits="userSpaceOnUse" width="8" height="8">
+          <rect width="8" height="8" fill="rgba(45,74,30,0.15)"/>
+        </pattern>
+        <pattern id="washPat" patternUnits="userSpaceOnUse" width="6" height="6">
+          <rect width="6" height="6" fill="rgba(74,122,155,0.12)"/>
+          <line x1="0" y1="3" x2="6" y2="3" stroke="rgba(74,122,155,0.15)" stroke-width="1"/>
+        </pattern>
+        <filter id="blur2"><feGaussianBlur stdDeviation="2"/></filter>
+        <filter id="blur4"><feGaussianBlur stdDeviation="4"/></filter>
+        <marker id="swaleArr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="rgba(74,122,155,0.5)"/>
+        </marker>
+      </defs>
+
+      <!-- PROPERTY BOUNDARY -->
+      <rect x="20" y="20" width="860" height="680" rx="6"
+            fill="url(#clayPat)" stroke="rgba(200,151,58,0.3)" stroke-width="2" stroke-dasharray="8,4"/>
+      <text x="450" y="14" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="rgba(200,151,58,0.4)" letter-spacing="2">40 ACRES · SNOWFLAKE, ARIZONA</text>
+
+      <!-- NORTH ARROW -->
+      <g transform="translate(850,50)">
+        <circle r="16" fill="rgba(30,18,8,0.8)" stroke="rgba(200,151,58,0.2)" stroke-width="1"/>
+        <text y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="10" fill="rgba(200,151,58,0.7)" font-weight="bold">N</text>
+        <line x1="0" y1="-13" x2="0" y2="-5" stroke="rgba(200,151,58,0.5)" stroke-width="1.5"/>
+      </g>
+
+      <!-- BACKGROUND TERRAIN: sandy clay base -->
+      <rect x="22" y="22" width="856" height="676" rx="5" fill="rgba(45,25,8,0.6)"/>
+
+      <!-- JUNIPER SCATTER (background dots) -->
+      <g opacity="0.5" id="juniper-layer">
+        <!-- Row 1 -->
+        <circle cx="60" cy="60" r="7" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="110" cy="45" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="155" cy="70" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="200" cy="50" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="260" cy="65" r="7" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="320" cy="45" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="400" cy="58" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="460" cy="42" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="530" cy="65" r="7" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="600" cy="48" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="660" cy="70" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="720" cy="50" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="790" cy="62" r="7" fill="rgba(45,74,30,0.6)"/>
+        <!-- Row 2 -->
+        <circle cx="80" cy="120" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="140" cy="135" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="195" cy="118" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="285" cy="128" r="7" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="365" cy="112" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="445" cy="130" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="515" cy="118" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="580" cy="135" r="7" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="640" cy="122" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="700" cy="138" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="760" cy="120" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="820" cy="132" r="7" fill="rgba(45,74,30,0.6)"/>
+        <!-- Scattered across -->
+        <circle cx="50" cy="200" r="7" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="120" cy="220" r="5" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="180" cy="190" r="8" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="240" cy="215" r="6" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="310" cy="205" r="7" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="820" cy="200" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="840" cy="280" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="855" cy="180" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="50" cy="300" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="100" cy="340" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="50" cy="420" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="110" cy="460" r="7" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="60" cy="520" r="6" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="830" cy="400" r="7" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="855" cy="480" r="5" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="820" cy="550" r="8" fill="rgba(45,74,30,0.6)"/>
+        <circle cx="845" cy="620" r="6" fill="rgba(45,74,30,0.5)"/>
+      </g>
+
+      <!-- THE WASH CORRIDOR (diagonal, NW to SE-ish) -->
+      <g id="wash-layer">
+        <!-- Wash path: curves from upper-center to lower-center-right -->
+        <path d="M340,30 Q360,80 380,150 Q410,240 420,330 Q435,420 450,520 Q465,600 480,690"
+              fill="none" stroke="rgba(74,122,155,0.25)" stroke-width="40" stroke-linecap="round"/>
+        <path d="M340,30 Q360,80 380,150 Q410,240 420,330 Q435,420 450,520 Q465,600 480,690"
+              fill="none" stroke="rgba(74,122,155,0.4)" stroke-width="18" stroke-linecap="round"/>
+        <path d="M340,30 Q360,80 380,150 Q410,240 420,330 Q435,420 450,520 Q465,600 480,690"
+              fill="none" stroke="rgba(74,122,155,0.15)" stroke-width="6" stroke-linecap="round" stroke-dasharray="12,8"/>
+        <!-- Wash label -->
+        <text x="395" y="285" font-family="Cinzel,serif" font-size="8" fill="rgba(74,122,155,0.6)" letter-spacing="1.5" transform="rotate(12,395,285)">THE WASH</text>
+      </g>
+
+      <!-- SWALES (on-contour lines stepping down the wash) -->
+      <g id="swale-layer" opacity="0.8">
+        <!-- Swale 1 -->
+        <path d="M270,180 Q310,165 350,170 Q390,175 430,165" fill="none" stroke="rgba(74,122,155,0.5)" stroke-width="2" stroke-dasharray="5,3"/>
+        <!-- Swale 2 -->
+        <path d="M250,260 Q300,245 350,250 Q400,255 450,245" fill="none" stroke="rgba(74,122,155,0.5)" stroke-width="2" stroke-dasharray="5,3"/>
+        <!-- Swale 3 -->
+        <path d="M255,345 Q305,330 360,335 Q415,340 460,330" fill="none" stroke="rgba(74,122,155,0.5)" stroke-width="2" stroke-dasharray="5,3"/>
+        <!-- Swale 4 -->
+        <path d="M260,430 Q310,415 370,420 Q425,425 475,415" fill="none" stroke="rgba(74,122,155,0.5)" stroke-width="2" stroke-dasharray="5,3"/>
+        <!-- Half-moon berms on swales -->
+        <path d="M310,165 Q325,155 340,165" fill="rgba(74,122,155,0.2)" stroke="rgba(74,122,155,0.4)" stroke-width="1.5"/>
+        <path d="M295,250 Q310,240 325,250" fill="rgba(74,122,155,0.2)" stroke="rgba(74,122,155,0.4)" stroke-width="1.5"/>
+        <path d="M310,335 Q325,325 340,335" fill="rgba(74,122,155,0.2)" stroke="rgba(74,122,155,0.4)" stroke-width="1.5"/>
+        <path d="M320,420 Q335,410 350,420" fill="rgba(74,122,155,0.2)" stroke="rgba(74,122,155,0.4)" stroke-width="1.5"/>
+        <!-- Crescent pools (filled areas) -->
+        <ellipse cx="360" cy="210" rx="22" ry="14" fill="rgba(74,122,155,0.3)" stroke="rgba(74,122,155,0.5)" stroke-width="1.5"/>
+        <ellipse cx="355" cy="300" rx="20" ry="13" fill="rgba(74,122,155,0.3)" stroke="rgba(74,122,155,0.5)" stroke-width="1.5"/>
+        <ellipse cx="368" cy="388" rx="22" ry="14" fill="rgba(74,122,155,0.3)" stroke="rgba(74,122,155,0.5)" stroke-width="1.5"/>
+      </g>
+
+      <!-- MAIN POND -->
+      <g id="pond-layer">
+        <ellipse cx="420" cy="480" rx="55" ry="38" fill="rgba(30,60,100,0.45)" stroke="rgba(74,122,155,0.6)" stroke-width="2"/>
+        <!-- Chinampa rafts -->
+        <rect x="400" y="462" width="28" height="14" rx="3" fill="rgba(74,107,46,0.5)" stroke="rgba(74,107,46,0.7)" stroke-width="1.5" class="map-hotspot" data-info="chinampa" style="cursor:pointer"/>
+        <rect x="415" y="479" width="24" height="12" rx="3" fill="rgba(74,107,46,0.5)" stroke="rgba(74,107,46,0.7)" stroke-width="1.5" class="map-hotspot" data-info="chinampa" style="cursor:pointer"/>
+        <rect x="432" y="463" width="20" height="11" rx="3" fill="rgba(74,107,46,0.5)" stroke="rgba(74,107,46,0.7)" stroke-width="1.5" class="map-hotspot" data-info="chinampa" style="cursor:pointer"/>
+        <!-- Floating platform -->
+        <rect x="378" y="474" width="20" height="16" rx="2" fill="rgba(100,60,20,0.4)" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" class="map-hotspot" data-info="float-platform" style="cursor:pointer"/>
+        <!-- Pond label -->
+        <text x="420" y="518" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(74,122,155,0.7)" letter-spacing="1">MAIN POND</text>
+      </g>
+
+      <!-- FOOD FOREST ZONE -->
+      <g id="forest-layer" opacity="0.7">
+        <ellipse cx="230" cy="380" rx="120" ry="90" fill="rgba(45,74,30,0.2)" stroke="rgba(74,107,46,0.3)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <!-- Canopy trees -->
+        <circle cx="180" cy="350" r="14" fill="rgba(45,74,30,0.5)" stroke="rgba(74,107,46,0.4)" stroke-width="1"/>
+        <circle cx="220" cy="330" r="12" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="265" cy="345" r="14" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="190" cy="400" r="10" fill="rgba(45,74,30,0.4)"/>
+        <circle cx="245" cy="415" r="12" fill="rgba(45,74,30,0.5)"/>
+        <circle cx="300" cy="395" r="10" fill="rgba(45,74,30,0.4)"/>
+        <circle cx="165" cy="430" r="8" fill="rgba(45,74,30,0.4)"/>
+        <text x="228" y="470" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(74,107,46,0.6)" letter-spacing="1">FOOD FOREST</text>
+      </g>
+
+      <!-- EARTH DOME (higher elevation, NW corner) -->
+      <g class="map-hotspot" data-info="dome" style="cursor:pointer" id="dome-marker">
+        <!-- Elevation indication: shaded mound -->
+        <ellipse cx="140" cy="175" rx="35" ry="25" fill="rgba(80,40,15,0.4)" stroke="rgba(139,58,28,0.4)" stroke-width="1.5"/>
+        <!-- Dome top circle -->
+        <circle cx="140" cy="170" r="16" fill="rgba(80,40,15,0.7)" stroke="rgba(139,58,28,0.6)" stroke-width="2"/>
+        <!-- Living roof dots -->
+        <circle cx="136" cy="166" r="2" fill="rgba(74,107,46,0.6)"/>
+        <circle cx="144" cy="164" r="2" fill="rgba(74,107,46,0.6)"/>
+        <circle cx="140" cy="172" r="2" fill="rgba(74,107,46,0.6)"/>
+        <!-- Hobbit door -->
+        <ellipse cx="140" cy="184" rx="5" ry="7" fill="rgba(30,15,5,0.9)" stroke="rgba(139,58,28,0.8)" stroke-width="1.5"/>
+        <!-- Entry path -->
+        <path d="M140,191 Q140,205 150,215" fill="none" stroke="rgba(200,151,58,0.3)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <!-- Greenhouse -->
+        <rect x="158" y="165" width="22" height="16" rx="2" fill="rgba(45,74,30,0.4)" stroke="rgba(74,107,46,0.5)" stroke-width="1.5"/>
+        <text x="140" y="204" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.7)" letter-spacing="1">EARTH DOME</text>
+        <text x="140" y="214" text-anchor="middle" font-family="Crimson Text,serif" font-size="7.5" fill="rgba(242,234,216,0.35)">Lindsay's home</text>
+      </g>
+
+      <!-- CENTRAL STATION (John's hub, lower-right area, SE) -->
+      <g class="map-hotspot" data-info="central" style="cursor:pointer">
+        <rect x="660" y="540" width="90" height="60" rx="4" fill="rgba(30,20,8,0.8)" stroke="rgba(200,151,58,0.4)" stroke-width="2"/>
+        <!-- Solar panels on roof -->
+        <rect x="665" y="545" width="38" height="18" rx="2" fill="rgba(20,40,80,0.6)" stroke="rgba(74,122,155,0.4)" stroke-width="1"/>
+        <line x1="665" y1="554" x2="703" y2="554" stroke="rgba(74,122,155,0.25)" stroke-width="1"/>
+        <line x1="684" y1="545" x2="684" y2="563" stroke="rgba(74,122,155,0.25)" stroke-width="1"/>
+        <!-- Green screen area -->
+        <rect x="706" y="545" width="38" height="25" rx="2" fill="rgba(20,80,30,0.4)" stroke="rgba(74,107,46,0.4)" stroke-width="1"/>
+        <!-- Antenna/wifi symbol -->
+        <line x1="705" y1="540" x2="705" y2="528" stroke="rgba(200,151,58,0.4)" stroke-width="1.5"/>
+        <circle cx="705" cy="526" r="3" fill="none" stroke="rgba(200,151,58,0.4)" stroke-width="1"/>
+        <circle cx="705" cy="526" r="7" fill="none" stroke="rgba(200,151,58,0.2)" stroke-width="1"/>
+        <text x="705" y="615" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.7)" letter-spacing="1">CENTRAL STATION</text>
+        <text x="705" y="625" text-anchor="middle" font-family="Crimson Text,serif" font-size="7.5" fill="rgba(242,234,216,0.35)">solar · water · wifi · green screen</text>
+      </g>
+
+      <!-- COMMUNAL KITCHEN -->
+      <g class="map-hotspot" data-info="kitchen" style="cursor:pointer">
+        <rect x="490" y="350" width="65" height="45" rx="3" fill="rgba(80,40,15,0.6)" stroke="rgba(139,58,28,0.5)" stroke-width="2"/>
+        <!-- Fire/chimney symbol -->
+        <rect x="518" y="340" width="8" height="14" rx="1" fill="rgba(80,40,15,0.7)" stroke="rgba(139,58,28,0.4)" stroke-width="1"/>
+        <text x="518" y="370" text-anchor="middle" font-size="12">🔥</text>
+        <text x="522" y="408" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.7)" letter-spacing="0.5">COMM. KITCHEN</text>
+        <text x="522" y="419" text-anchor="middle" font-family="Crimson Text,serif" font-size="7.5" fill="rgba(242,234,216,0.35)">juniper · stone · clay</text>
+      </g>
+
+      <!-- MUSHROOM TUNNEL (below grade mark) -->
+      <g class="map-hotspot" data-info="mushroom" style="cursor:pointer">
+        <rect x="195" y="240" width="50" height="28" rx="3" fill="rgba(60,30,80,0.4)" stroke="rgba(100,50,120,0.4)" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="220" y="258" text-anchor="middle" font-size="11">🍄</text>
+        <text x="220" y="280" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(160,100,200,0.6)" letter-spacing="0.5">MUSHROOM TUNNEL</text>
+        <text x="220" y="290" text-anchor="middle" font-family="Crimson Text,serif" font-size="7" fill="rgba(242,234,216,0.3)">below grade</text>
+      </g>
+
+      <!-- GREENHOUSE -->
+      <g class="map-hotspot" data-info="greenhouse" style="cursor:pointer">
+        <rect x="530" y="250" width="55" height="38" rx="3" fill="rgba(20,60,25,0.5)" stroke="rgba(74,107,46,0.5)" stroke-width="1.5"/>
+        <!-- Glazing lines -->
+        <line x1="545" y1="250" x2="545" y2="288" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+        <line x1="558" y1="250" x2="558" y2="288" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+        <line x1="571" y1="250" x2="571" y2="288" stroke="rgba(74,107,46,0.25)" stroke-width="1"/>
+        <text x="557" y="274" text-anchor="middle" font-size="11">🌿</text>
+        <text x="557" y="300" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(74,107,46,0.8)" letter-spacing="0.5">GREENHOUSE</text>
+        <text x="557" y="310" text-anchor="middle" font-family="Crimson Text,serif" font-size="7" fill="rgba(242,234,216,0.35)">hydro · microgreens</text>
+      </g>
+
+      <!-- ART STUDIO -->
+      <g class="map-hotspot" data-info="art-studio" style="cursor:pointer">
+        <rect x="570" y="155" width="48" height="38" rx="3" fill="rgba(60,40,80,0.4)" stroke="rgba(120,80,160,0.4)" stroke-width="1.5"/>
+        <text x="594" y="178" text-anchor="middle" font-size="11">🎨</text>
+        <text x="594" y="204" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(180,140,220,0.6)" letter-spacing="0.5">ART STUDIO</text>
+        <text x="594" y="214" text-anchor="middle" font-family="Crimson Text,serif" font-size="7" fill="rgba(242,234,216,0.35)">north skylight · adobe</text>
+      </g>
+
+      <!-- POTTERY STUDIO + GRAPE CANOPY -->
+      <g class="map-hotspot" data-info="pottery" style="cursor:pointer">
+        <rect x="490" y="155" width="60" height="38" rx="3" fill="rgba(80,45,15,0.5)" stroke="rgba(139,58,28,0.4)" stroke-width="1.5"/>
+        <!-- Grape canopy suggestion -->
+        <ellipse cx="520" cy="150" rx="28" ry="8" fill="rgba(45,74,30,0.3)" stroke="rgba(74,107,46,0.3)" stroke-width="1"/>
+        <text x="520" y="178" text-anchor="middle" font-size="11">🏺</text>
+        <text x="520" y="205" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.6)" letter-spacing="0.5">POTTERY STUDIO</text>
+        <text x="520" y="215" text-anchor="middle" font-family="Crimson Text,serif" font-size="7" fill="rgba(242,234,216,0.3)">grape canopy · forge</text>
+      </g>
+
+      <!-- MAINTENANCE SHOP / FORGE -->
+      <g class="map-hotspot" data-info="forge" style="cursor:pointer">
+        <rect x="650" y="155" width="50" height="38" rx="3" fill="rgba(40,30,15,0.6)" stroke="rgba(100,60,20,0.4)" stroke-width="1.5"/>
+        <text x="675" y="178" text-anchor="middle" font-size="11">⚒️</text>
+        <text x="675" y="204" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.5)" letter-spacing="0.5">FORGE · SHOP</text>
+        <text x="675" y="214" text-anchor="middle" font-family="Crimson Text,serif" font-size="7" fill="rgba(242,234,216,0.3)">blacksmithing · welding</text>
+      </g>
+
+      <!-- APIARY -->
+      <g class="map-hotspot" data-info="apiary" style="cursor:pointer">
+        <rect x="660" y="255" width="42" height="30" rx="3" fill="rgba(100,70,10,0.4)" stroke="rgba(180,130,20,0.4)" stroke-width="1.5"/>
+        <text x="681" y="274" text-anchor="middle" font-size="11">🐝</text>
+        <text x="681" y="297" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.6)" letter-spacing="0.5">APIARY</text>
+      </g>
+
+      <!-- TREEHOUSE (along the wash) -->
+      <g class="map-hotspot" data-info="treehouse" style="cursor:pointer">
+        <!-- Platform at elevation -->
+        <rect x="382" y="175" width="28" height="22" rx="3" fill="rgba(60,40,15,0.5)" stroke="rgba(200,151,58,0.4)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <!-- Post legs -->
+        <line x1="386" y1="197" x2="386" y2="210" stroke="rgba(100,60,20,0.4)" stroke-width="2"/>
+        <line x1="406" y1="197" x2="406" y2="210" stroke="rgba(100,60,20,0.4)" stroke-width="2"/>
+        <text x="396" y="189" text-anchor="middle" font-size="10">🛖</text>
+        <text x="396" y="222" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(200,151,58,0.6)" letter-spacing="0.5">TREEHOUSE</text>
+        <text x="396" y="232" text-anchor="middle" font-family="Crimson Text,serif" font-size="7" fill="rgba(242,234,216,0.3)">along wash</text>
+      </g>
+
+      <!-- ELEVATED SLEEPING PODS (2) -->
+      <g class="map-hotspot" data-info="pod" style="cursor:pointer">
+        <rect x="490" y="70" width="30" height="22" rx="3" fill="rgba(30,40,60,0.5)" stroke="rgba(74,122,155,0.4)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="505" y="85" text-anchor="middle" font-size="9">🛏</text>
+        <text x="505" y="103" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(74,122,155,0.7)" letter-spacing="0.5">POD 1</text>
+      </g>
+      <g class="map-hotspot" data-info="pod" style="cursor:pointer">
+        <rect x="555" y="70" width="30" height="22" rx="3" fill="rgba(30,40,60,0.5)" stroke="rgba(74,122,155,0.4)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="570" y="85" text-anchor="middle" font-size="9">🛏</text>
+        <text x="570" y="103" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(74,122,155,0.7)" letter-spacing="0.5">POD 2</text>
+      </g>
+
+      <!-- SUSPENDED WALKWAY -->
+      <path d="M510,81 L555,81" fill="none" stroke="rgba(200,151,58,0.3)" stroke-width="2" stroke-dasharray="4,3"/>
+      <text x="533" y="95" text-anchor="middle" font-family="Cinzel,serif" font-size="6.5" fill="rgba(200,151,58,0.4)" letter-spacing="0.5">WALKWAY</text>
+
+      <!-- RV SPOTS with hookups -->
+      <g id="rv-layer">
+        <!-- RV 1 existing -->
+        <rect x="700" y="450" width="45" height="25" rx="2" fill="rgba(40,25,8,0.6)" stroke="rgba(100,70,30,0.5)" stroke-width="1.5"/>
+        <text x="722" y="466" text-anchor="middle" font-size="9">🚌</text>
+        <text x="722" y="487" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(200,151,58,0.4)" letter-spacing="0.5">RV / WWOOF</text>
+
+        <!-- RV Spots with 30A hookups -->
+        <g class="map-hotspot" data-info="rv-spot" style="cursor:pointer">
+          <rect x="590" y="440" width="35" height="22" rx="2" fill="rgba(30,20,8,0.5)" stroke="rgba(100,70,30,0.35)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="607" y="455" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(200,151,58,0.4)">30A · H2O</text>
+        </g>
+        <g class="map-hotspot" data-info="rv-spot" style="cursor:pointer">
+          <rect x="590" y="472" width="35" height="22" rx="2" fill="rgba(30,20,8,0.5)" stroke="rgba(100,70,30,0.35)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="607" y="487" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(200,151,58,0.4)">30A · H2O</text>
+        </g>
+        <g class="map-hotspot" data-info="rv-spot" style="cursor:pointer">
+          <rect x="590" y="504" width="35" height="22" rx="2" fill="rgba(30,20,8,0.5)" stroke="rgba(100,70,30,0.35)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="607" y="519" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(200,151,58,0.4)">30A · H2O</text>
+        </g>
+        <!-- Cistern node for RVs -->
+        <circle cx="640" cy="480" r="12" fill="rgba(20,50,80,0.4)" stroke="rgba(74,122,155,0.4)" stroke-width="1.5"/>
+        <text x="640" y="484" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(74,122,155,0.7)">H2O</text>
+      </g>
+
+      <!-- GOAT PADDOCKS -->
+      <g id="goat-layer" class="map-hotspot" data-info="goats" style="cursor:pointer">
+        <rect x="720" y="280" width="130" height="150" rx="4" fill="rgba(80,50,15,0.15)" stroke="rgba(139,90,30,0.35)" stroke-width="2" stroke-dasharray="8,4"/>
+        <!-- Inner division fence -->
+        <line x1="785" y1="280" x2="785" y2="430" stroke="rgba(139,90,30,0.25)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="752" y="340" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.4)" letter-spacing="0.5">GOAT</text>
+        <text x="752" y="352" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.4)" letter-spacing="0.5">PADDOCKS</text>
+        <text x="752" y="365" text-anchor="middle" font-size="10">🐐</text>
+        <text x="752" y="378" text-anchor="middle" font-family="Crimson Text,serif" font-size="8" fill="rgba(242,234,216,0.3)">400 dairy goats</text>
+      </g>
+
+      <!-- HUGELKULTUR BEDS -->
+      <g opacity="0.7">
+        <path d="M240,310 Q255,305 270,310 Q285,315 300,310" fill="rgba(80,50,15,0.4)" stroke="rgba(100,65,20,0.5)" stroke-width="1.5"/>
+        <path d="M240,325 Q255,320 270,325 Q285,330 300,325" fill="rgba(80,50,15,0.4)" stroke="rgba(100,65,20,0.5)" stroke-width="1.5"/>
+        <text x="270" y="345" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(100,65,20,0.6)" letter-spacing="0.5">HUGELS</text>
+      </g>
+
+      <!-- DRYING SHED -->
+      <g class="map-hotspot" data-info="drying" style="cursor:pointer">
+        <rect x="195" y="140" width="38" height="28" rx="2" fill="rgba(50,35,10,0.5)" stroke="rgba(100,70,20,0.4)" stroke-width="1.5"/>
+        <text x="214" y="157" text-anchor="middle" font-size="9">☀️</text>
+        <text x="214" y="178" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(200,151,58,0.5)" letter-spacing="0.5">DRYING SHED</text>
+      </g>
+
+      <!-- RABBIT + DUCK HOUSE -->
+      <g class="map-hotspot" data-info="animals" style="cursor:pointer">
+        <rect x="195" y="310" width="38" height="28" rx="2" fill="rgba(50,35,10,0.5)" stroke="rgba(100,70,20,0.4)" stroke-width="1.5"/>
+        <text x="214" y="327" text-anchor="middle" font-size="9">🦆</text>
+        <text x="214" y="348" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(200,151,58,0.4)" letter-spacing="0.5">DUCK · RABBIT</text>
+      </g>
+
+      <!-- VINEYARD ZONE -->
+      <g class="map-hotspot" data-info="vineyard" style="cursor:pointer">
+        <rect x="720" y="160" width="100" height="80" rx="4" fill="rgba(45,74,30,0.2)" stroke="rgba(74,107,46,0.3)" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <!-- Vine rows -->
+        <line x1="730" y1="175" x2="810" y2="175" stroke="rgba(74,107,46,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="730" y1="190" x2="810" y2="190" stroke="rgba(74,107,46,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="730" y1="205" x2="810" y2="205" stroke="rgba(74,107,46,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="730" y1="220" x2="810" y2="220" stroke="rgba(74,107,46,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="770" y="248" text-anchor="middle" font-family="Cinzel,serif" font-size="7.5" fill="rgba(74,107,46,0.7)" letter-spacing="0.5">VINEYARD</text>
+        <text x="770" y="258" text-anchor="middle" font-family="Crimson Text,serif" font-size="7" fill="rgba(242,234,216,0.3)">Vitis arizonica</text>
+      </g>
+
+      <!-- GEOSHIP RESIDENT SITES (scattered, private) -->
+      <g id="geoship-layer">
+        <g class="map-hotspot" data-info="geoship" style="cursor:pointer">
+          <polygon points="290,80 308,108 272,108" fill="rgba(74,107,46,0.2)" stroke="rgba(74,107,46,0.4)" stroke-width="1.5"/>
+          <text x="290" y="102" text-anchor="middle" font-size="9">⬡</text>
+          <text x="290" y="120" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(74,107,46,0.7)" letter-spacing="0.5">RESIDENT 1</text>
+        </g>
+        <g class="map-hotspot" data-info="geoship" style="cursor:pointer">
+          <polygon points="750,80 768,108 732,108" fill="rgba(74,107,46,0.2)" stroke="rgba(74,107,46,0.4)" stroke-width="1.5"/>
+          <text x="750" y="102" text-anchor="middle" font-size="9">⬡</text>
+          <text x="750" y="120" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(74,107,46,0.7)" letter-spacing="0.5">RESIDENT 2</text>
+        </g>
+        <g class="map-hotspot" data-info="geoship" style="cursor:pointer">
+          <polygon points="830,520 848,548 812,548" fill="rgba(74,107,46,0.2)" stroke="rgba(74,107,46,0.4)" stroke-width="1.5"/>
+          <text x="830" y="542" text-anchor="middle" font-size="9">⬡</text>
+          <text x="830" y="560" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="rgba(74,107,46,0.7)" letter-spacing="0.5">RESIDENT 3</text>
+        </g>
+      </g>
+
+      <!-- SCALE BAR -->
+      <g transform="translate(30,685)">
+        <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(200,151,58,0.4)" stroke-width="1.5"/>
+        <line x1="0" y1="-4" x2="0" y2="4" stroke="rgba(200,151,58,0.4)" stroke-width="1.5"/>
+        <line x1="80" y1="-4" x2="80" y2="4" stroke="rgba(200,151,58,0.4)" stroke-width="1.5"/>
+        <text x="40" y="-7" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="rgba(200,151,58,0.4)" letter-spacing="1">~¼ MILE</text>
+      </g>
+    </svg>
+
+    <!-- MAP CONTROLS -->
+    <div class="map-controls">
+      <span style="font-family:'Cinzel',serif;font-size:0.6rem;color:rgba(200,151,58,0.4);letter-spacing:0.2em;align-self:center;margin-right:0.5rem;">LAYERS:</span>
+      <button class="ctrl-btn active" onclick="toggleLayer('wash-layer',this)">Wash + Swales</button>
+      <button class="ctrl-btn active" onclick="toggleLayer('forest-layer',this)">Food Forest</button>
+      <button class="ctrl-btn active" onclick="toggleLayer('pond-layer',this)">Ponds + Chinampas</button>
+      <button class="ctrl-btn active" onclick="toggleLayer('goat-layer',this)">Goat Paddocks</button>
+      <button class="ctrl-btn active" onclick="toggleLayer('geoship-layer',this)">Resident Sites</button>
+      <button class="ctrl-btn active" onclick="toggleLayer('rv-layer',this)">RV / WWOOF Spots</button>
+      <button class="ctrl-btn active" onclick="toggleLayer('juniper-layer',this)">Juniper</button>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(74,122,155,0.6)"></div>Water · Wash · Swales</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(74,107,46,0.7)"></div>Food Forest · Vineyard</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(139,58,28,0.7)"></div>Earth Structures</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(200,151,58,0.7)"></div>Elevated / Floating</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(74,107,46,0.5)"></div>Geoship Resident Sites</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(100,70,30,0.6)"></div>RV / WWOOF Spots</div>
+      <div class="legend-item" style="font-style:italic;font-size:0.55rem;">— — — Below grade or future structure</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  SNOWFLAKE SANCTUARY · PROPERTY MAP · SNOWFLAKE, ARIZONA · 40 ACRES<br><br>
+  <a href="index.html" style="color:rgba(200,151,58,0.5);text-decoration:none;letter-spacing:0.15em;">← BACK TO OVERVIEW</a>
+</footer>
+
+<script>
+const infoData = {
+  'dome': { title:'🏠 Earth Dome — Lindsay\'s Home', body:'Hobbit door entry at grade level. Loft mezzanine with open railing — you look down into the 800 SF main living level below. Bedroom, kitchen/living, and bathroom. Aquaponics tanks below floor panels. South greenhouse via earth berm corridor. Rocket mass heater. Buried under 2–4 ft composted soil with living roof.', cost:'$35–52k' },
+  'central': { title:'⚡ Central Station — John\'s Hub', body:'4–6 kW solar array and battery bank. Cistern with distribution to RV hookups. EV and device charging. Starlink/LTE wifi. Elevated north-facing green screen deck for content creation and teaching videos. Medical imaging company infrastructure.', cost:'$8–15k' },
+  'kitchen': { title:'🔥 Communal Kitchen', body:'Juniper timber frame, stone and clay walls. Wood-fired oven from local clay. Central hearth. Fermentation alcove. Cheesemaking-capable: pasteurization sink, mold press, aging area. Large enough for 20+ people. Ironwork fixtures from the forge. The social heart of the property.', cost:'$4–8k + WWOOF labor' },
+  'mushroom': { title:'🍄 Mushroom Tunnel', body:'Excavated below grade into slope. Natural earth insulation maintains 55–60°F without power. Oyster, lion\'s mane, shiitake. Fungal composting hub adjacent — 6 barrel stations, closed-loop fertility from goat manure and kitchen waste.', cost:'$2–5k' },
+  'greenhouse': { title:'🌿 Greenhouse + Hydroponics', body:'South-facing passive solar. Vertical towers for microgreens and herbs year-round. Extends the short Arizona growing season significantly. NRCS EQIP covers up to 50% of cost.', cost:'$9–14k net after EQIP' },
+  'chinampa': { title:'🌿 Chinampa Garden Rafts', body:'Edge-based peninsula beds and semi-floating rafts in the main pond. Reed + brush + compost construction, roots bind over time. Mint, watercress, chard, kale, cattails, duck potato. Shades water surface — reduces evaporation. Fish waste feeds plants, plants clean water.', cost:'$200–600 for 2–5 rafts' },
+  'float-platform': { title:'🧘 Floating Meditation Platform', body:'Lightweight cedar or recycled lumber, anchored with vertical poles that rise and fall with water level. Used for yoga, meditation, art, small gatherings. Set apart as the most peaceful point on the property.', cost:'$400–900' },
+  'treehouse': { title:'🛖 Treehouse', body:'Built into the larger junipers along the wash. Cable-anchored for load distribution. Sleeping platform plus sitting area. Off-grid. HipCamp premium listing — the most requested stay on the property.', cost:'$2–5k' },
+  'pod': { title:'🛏 Elevated Sleeping Pod', body:'Off-ground on post foundation. Lightweight timber or salvage frame. Private, insulated, off-grid. Views across the juniper canopy. HipCamp premium listing. No digging, no permanent foundation required.', cost:'$1–3k each' },
+  'goats': { title:'🐐 Goat Paddocks — 400 Dairy Goats', body:'John\'s existing operation. Machine + hand milking. Rotational paddock management — goats browse juniper understory, reducing fire risk. Manure feeds compost and hugelkultur. Community labor earns a formal share of dairy and cheese income.', cost:'Existing operation' },
+  'pottery': { title:'🏺 Pottery Studio + Grape Canopy', body:'Under a Vitis arizonica (native Arizona grape) canopy on juniper pergola. Pit kiln Year 1 ($0). Brick downdraft Year 2. Rocket mass kiln Year 2–3. Community exchange: studio access in trade for making what the property needs — ollas, crocks, tiles.', cost:'$1–3k + WWOOF labor' },
+  'forge': { title:'⚒️ Maintenance Shop + Forge', body:'Blacksmithing and welding. All hardware for the property made here — hooks, door fittings, gates, ironwork. WWOOF journeyman labor. Custom ironwork commissions. Everything the property needs, plus revenue from commissions and agritourism forge demos.', cost:'$3–8k structure + $2–5k equipment' },
+  'art-studio': { title:'🎨 Art Studio', body:'Adobe and juniper frame. North-facing skylight for artist-quality diffuse light. High ceiling for sculpture. Painting, sculpture using cleared stone and found material, drawing, printmaking. Artist residency space and workshops.', cost:'$3–8k + WWOOF labor' },
+  'apiary': { title:'🐝 Apiary — 2–4 Hives', body:'High desert wildflower and juniper honey — distinctive flavor profile commanding premium prices. Pollinates food forest and gardens. Beeswax for candles and wood finish. Year 1: $2–4k revenue. Year 3: $6–10k.', cost:'$400–1,200' },
+  'rv-spot': { title:'🚌 RV / WWOOF Spot with Hookups', body:'30-amp electrical from central station solar. Water from on-site cistern. WWOOF volunteers and long-stay guests. 3 designated spots plus existing RVs. Each spot has a defined water connection node fed from the central cistern.', cost:'$300–600 per hookup' },
+  'drying': { title:'☀️ Drying Shed', body:'Herbs, mushroom powder, jerky, fruit leather, seed saving, wood drying for building. Juniper post frame with metal or shade cloth roof. Open sides, screened rack shelving. Zero electricity required.', cost:'$800–1,500' },
+  'animals': { title:'🦆 Duck House + Rabbit Hutches', body:'20–30 Khaki Campbell or Muscovy ducks — eggs daily, pest control, manure to compost. Perimeter of water features. 6–8 does rabbits — most efficient protein converter, cold manure goes direct to garden. Both are therapeutic for retreat guests.', cost:'$400–700 + WWOOF labor' },
+  'vineyard': { title:'🍇 Vineyard — Vitis arizonica', body:'Native Arizona grape — grows wild along washes here. Cold-hardy to this elevation. Naturally disease resistant. Old-world minimal intervention winemaking. Hand press. Clay amphora or oak barrel aging. TTB federal permit application begins Year 2.', cost:'$2–5k vines + press · $300/yr license' },
+  'geoship': { title:'⬡ Resident Home Site', body:'Each permanent resident selects their own private area of the 40 acres. Site is mapped and protected in the community covenant. Resident commissions their own Geoship geodesic ceramic dome — custom layout, orientation, interior. No clustering. Each home is sovereign. Equity in the structure accrues to the resident.', cost:'$50–150k per dome · resident-funded' },
+};
+
+const panel = document.getElementById('infoPanel');
+const ipTitle = document.getElementById('ipTitle');
+const ipBody = document.getElementById('ipBody');
+const ipCost = document.getElementById('ipCost');
+
+document.querySelectorAll('.map-hotspot').forEach(el => {
+  el.addEventListener('click', function(e) {
+    const key = this.getAttribute('data-info');
+    const d = infoData[key];
+    if (!d) return;
+    ipTitle.textContent = d.title;
+    ipBody.textContent = d.body;
+    ipCost.textContent = d.cost || '';
+    panel.classList.add('visible');
+  });
+  el.addEventListener('mouseenter', function() {
+    this.style.opacity = '0.75';
+    this.style.filter = 'brightness(1.4)';
+  });
+  el.addEventListener('mouseleave', function() {
+    this.style.opacity = '1';
+    this.style.filter = 'none';
+  });
+});
+
+// Close panel on map background click
+document.getElementById('prop-map').addEventListener('click', function(e) {
+  if (!e.target.closest('.map-hotspot')) {
+    panel.classList.remove('visible');
+  }
+});
+
+function toggleLayer(id, btn) {
+  const layer = document.getElementById(id);
+  if (!layer) return;
+  const isHidden = layer.style.display === 'none';
+  layer.style.display = isHidden ? '' : 'none';
+  btn.classList.toggle('active', isHidden);
+}
+</script>
+</body>
+</html>
